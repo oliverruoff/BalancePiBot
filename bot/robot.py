@@ -40,7 +40,7 @@ try:
            pt.move_front()
         else:
             pt.move_back()
-        time.sleep(10)
+        time.sleep(0.1)
 except KeyboardInterrupt:
     print('Stopped!')
 
