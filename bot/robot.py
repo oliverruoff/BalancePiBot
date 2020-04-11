@@ -29,20 +29,14 @@ pt = powertrain.powertrain(
     MOTORSPEED_RIGHT)
     
 mpu = mpu6050.mpu6050(0x68)
+try:
+   while(True):
+       z = mpu.get_accel_data()['z']
+       if z > 0:
+           pt.move_front()
+        else:
+            pt.move_back()
+except KeyboardInterrupt:
+    print('Stopped!')
 
-pt.move_front()
-time.sleep(2)
-pt.move_back()
-time.sleep(2)
-pt.break_right_wheel()
-pt.turn_left_wheel(True)
-time.sleep(2)
-pt.turn_left_wheel(False)
-time.sleep(2)
-pt.break_left_wheel()
-pt.turn_right_wheel(True)
-time.sleep(2)
-pt.turn_right_wheel(False)
-time.sleep(2)
-pt.break_motors()
 # mpu.get_accel_data()['z']
