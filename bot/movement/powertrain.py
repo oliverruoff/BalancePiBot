@@ -62,6 +62,10 @@ class powertrain:
     def change_speed_right(self, speed):
         self.p_b.ChangeDutyCycle(speed)
 
+    def change_speed_all(self, speed):
+        self.change_speed_right(speed)
+        self.change_speed_left(speed)
+
     def turn_left_wheel(self, forward=True):
         if forward:
             GPIO.output(self.in3, GPIO.LOW)
