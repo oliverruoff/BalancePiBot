@@ -36,7 +36,7 @@ pt.change_speed_right(100)
 
 setpoint = 0
 
-Kp = 0
+Kp = 1
 Ki = 0
 Kd = 0
 
@@ -45,10 +45,15 @@ v = mpu.get_accel_data()['z']
 
 try:
    while(True):
-       control = pid(v)
-       pt.change_speed_all(control)
-       print('V:', v, '| control:', control)
-       v = mpu.get_accel_data()['z']
+        control = int(pid(v))
+        if control > 0:
+            pt.move_front()
+        else:
+            pt.move_back()
+        control = abs(control)
+        pt.change_speed_all(control)
+        print('V:', v, '| control:', control)
+        v = mpu.get_accel_data()['z']
 
 except KeyboardInterrupt:
     print('Stopped!')
