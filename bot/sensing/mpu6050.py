@@ -191,6 +191,20 @@ class mpu6050:
 
         return {'x': x, 'y': y, 'z': z}
 
+    def get_temp(self):
+        """Reads the temperature from the onboard temperature sensor of the MPU-6050.
+        Returns the temperature in degrees Celcius.
+        """
+        # Get the raw data
+        raw_temp = self.read_i2c_word(self.TEMP_OUT0)
+
+        # Get the actual temperature using the formule given in the
+        # MPU-6050 Register Map and Descriptions revision 4.2, page 30
+        actual_temp = (raw_temp / 340) + 36.53
+
+        # Return the temperature
+        return actual_temp
+
     def get_all_data(self):
         temp = self.get_temp()
         accel = self.get_accel_data()
