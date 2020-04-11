@@ -29,6 +29,10 @@ pt = powertrain.powertrain(
     MOTORSPEED_RIGHT)
     
 mpu = mpu6050.mpu6050(0x68)
+
+pt.change_speed_left(100)
+pt.change_speed_right(100)
+
 try:
    while(True):
         z = mpu.get_accel_data()['z']
@@ -36,6 +40,7 @@ try:
            pt.move_front()
         else:
             pt.move_back()
+        time.sleep(10)
 except KeyboardInterrupt:
     print('Stopped!')
 
