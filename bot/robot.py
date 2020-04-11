@@ -41,14 +41,14 @@ Ki = 0
 Kd = 0
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
-v = mpu.get_accel_data['z']
+v = mpu.get_accel_data()['z']
 
 try:
    while(True):
        control = pid(v)
        pt.change_speed_all(control)
        print('V:', v, '| control:', control)
-       v = mpu.get_accel_data['z']
+       v = mpu.get_accel_data()['z']
 
 except KeyboardInterrupt:
     print('Stopped!')
