@@ -31,4 +31,5 @@ pt = powertrain.powertrain(
 mpu = mpu6050.mpu6050(0x68)
 
 while (True):
-    print(mpu.get_gyro_data())
+    print(mpu.get_all_data())
+    time.sleep(0.1)
