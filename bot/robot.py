@@ -33,13 +33,21 @@ mpu = mpu6050.mpu6050(0x68)
 pt.change_speed_left(100)
 pt.change_speed_right(100)
 
+SPEED_MULTIPLIER = 40
+hold_z = 0
+
+last_loop_time = time.time()
 try:
    while(True):
+        this_time = time.time()
+        elapsed_time = this_time - last_loop_time
+        last_loop_time = this_time
         z = mpu.get_accel_data()['z']
-        speed = abs(z * 20) if abs(z * 20) < 100 else 100
-        print(time.time(), 'Z Axis:', z, '| Speed adjustment:', speed)
+        speed = int(abs(z * SPEED_MULTIPLIER))
+        speed = speed if speed < 100 else 100
+        print(time.time(), 'Z Axis:', z, '| Speed adjustment:', speed, '| Running on %i Hz.' %(int(1/elapsed_time)))
         pt.change_speed_all(speed)
-        if z > 0:
+        if z > hold_z:
            pt.move_front()
         else:
             pt.move_back()
