@@ -31,8 +31,8 @@ pt = powertrain.powertrain(
 mpu = mpu6050.mpu6050(0x68)
 try:
    while(True):
-       z = mpu.get_accel_data()['z']
-       if z > 0:
+        z = mpu.get_accel_data()['z']
+        if z > 0:
            pt.move_front()
         else:
             pt.move_back()
