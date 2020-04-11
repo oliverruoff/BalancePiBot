@@ -30,6 +30,13 @@ pt = powertrain.powertrain(
     
 mpu = mpu6050.mpu6050(0x68)
 
-while (True):
-    print(mpu.get_all_data())
-    time.sleep(0.1)
+pt.move_front()
+time.sleep(2)
+pt.move_back()
+time.sleep(2)
+pt.turn_left()
+time.sleep(2)
+pt.turn_right()
+time.sleep(2)
+pt.break_motors()
+# mpu.get_accel_data()['z']
