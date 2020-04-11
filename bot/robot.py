@@ -30,6 +30,5 @@ pt = powertrain.powertrain(
     
 mpu = mpu6050.mpu6050(0x68)
 
-pt.move_front()
-time.sleep(3)
-pt.break_motors()
+while (True):
+    print(mpu.get_gyro_data())
