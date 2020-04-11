@@ -36,8 +36,8 @@ pt.change_speed_right(100)
 try:
    while(True):
         z = mpu.get_accel_data()['z']
-        print('Z Axis:', z)
-        speed = z * 20
+        speed = abs(z * 20) if abs(z * 20) < 100 else 100
+        print(time.time(), 'Z Axis:', z, '| Speed adjustment:', speed)
         pt.change_speed_all(speed)
         if z > 0:
            pt.move_front()
