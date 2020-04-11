@@ -43,14 +43,17 @@ Kd = 0
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
 v = mpu.get_accel_data()['z']
 
+SPEED_MULTIPLIER = 10
+
 try:
    while(True):
         control = int(pid(v))
-        if control > 0:
+        if control < 0:
             pt.move_front()
         else:
             pt.move_back()
-        control = abs(control)
+        control = abs(control) * SPEED_MULTIPLIER
+        control = control if control < 100 else 100
         pt.change_speed_all(control)
         print('V:', v, '| control:', control)
         v = mpu.get_accel_data()['z']
