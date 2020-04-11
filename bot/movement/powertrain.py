@@ -71,12 +71,18 @@ class powertrain:
             GPIO.output(self.in4, GPIO.HIGH)
 
     def break_motors(self):
-        GPIO.output(self.in1, GPIO.HIGH)
-        GPIO.output(self.in2, GPIO.HIGH)
-        GPIO.output(self.in3, GPIO.HIGH)
-        GPIO.output(self.in4, GPIO.HIGH)
+        break_left_wheel()
+        break_right_wheel()
         sleep(0.5)
         self.stop_motors()
+
+    def break_right_wheel(self):
+        GPIO.output(self.in1, GPIO.HIGH)
+        GPIO.output(self.in2, GPIO.HIGH)
+
+    def break_left_wheel(self):
+        GPIO.output(self.in3, GPIO.HIGH)
+        GPIO.output(self.in4, GPIO.HIGH)
 
     def turn_right_wheel(self, forward=True):
         if forward:
@@ -94,11 +100,11 @@ class powertrain:
         self.turn_right_wheel(False)
         self.turn_left_wheel()
 
-    def move_front(self):
+    def move_back(self):
         self.turn_right_wheel()
         self.turn_left_wheel()
 
-    def move_back(self):
+    def move_front(self):
         self.turn_right_wheel(False)
         self.turn_left_wheel(False)
 
