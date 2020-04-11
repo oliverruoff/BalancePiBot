@@ -1,6 +1,7 @@
 import time
 
 import RPi.GPIO as GPIO
+from simple_pid import PID
 
 from movement import powertrain
 from sensing import mpu6050
@@ -33,24 +34,22 @@ mpu = mpu6050.mpu6050(0x68)
 pt.change_speed_left(100)
 pt.change_speed_right(100)
 
-SPEED_MULTIPLIER = 40
-hold_z = 0
+setpoint = 0
 
-last_loop_time = time.time()
+Kp = 0
+Ki = 0
+Kd = 0
+
+pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
+v = mpu.get_accel_data['z']
+
 try:
    while(True):
-        this_time = time.time()
-        elapsed_time = this_time - last_loop_time
-        last_loop_time = this_time
-        z = mpu.get_accel_data()['z']
-        speed = int(abs(z * SPEED_MULTIPLIER))
-        speed = speed if speed < 100 else 100
-        print(time.time(), 'Z Axis:', z, '| Speed adjustment:', speed, '| Running on %i Hz.' %(int(1/elapsed_time)))
-        pt.change_speed_all(speed)
-        if z > hold_z:
-           pt.move_front()
-        else:
-            pt.move_back()
+       control = pid(v)
+       pt.change_speed_all(control)
+       print('V:', v, '| control:', control)
+       v = mpu.get_accel_data['z']
+
 except KeyboardInterrupt:
     print('Stopped!')
 
