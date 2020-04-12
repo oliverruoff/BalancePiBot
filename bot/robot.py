@@ -35,21 +35,22 @@ pt.change_speed_all(0)
 
 ###################### Testing
 
-pt.move_front()
+# pt.move_front()
 
-while(True):
-    speed = int(input('speed:\n'))
-    pt.change_speed_all(speed)
+# while(True):
+#    speed = int(input('speed:\n'))
+#    pt.change_speed_all(speed)
 
 
 
 ###################### PID
 
 setpoint = -0.38623979442138656
+min_motor_speed = 55 # required for motors to start turning
 
 Kp = 30
 Ki = 0
-Kd = 30
+Kd = 0
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
 v = mpu.get_accel_data()['z']
@@ -64,6 +65,7 @@ try:
         else:
             pt.move_back()
         control = abs(control)
+        control = min_motor_speed if control < min_motor_speed else control
         pt.change_speed_all(control)
         current_time = time.time()
         print('V:', v, '| control:', control, '| Time elapsed (s):', current_time-old_time)
