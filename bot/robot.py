@@ -31,15 +31,16 @@ pt = powertrain.powertrain(
     
 mpu = mpu6050.mpu6050(0x68)
 
-pt.change_speed_all(0)
+pt.change_speed_all(100)
 
 ###################### Testing
 
-# pt.move_front()
-
-# while(True):
-#    speed = int(input('speed:\n'))
-#    pt.change_speed_all(speed)
+while True:
+    angle = mpu.get_accel_data()['z']
+    if angle > 0:
+        pt.move_front()
+    else:
+        pt.move_back()
 
 
 
