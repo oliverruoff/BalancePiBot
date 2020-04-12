@@ -38,7 +38,7 @@ setpoint = -0.38623979442138656
 
 Kp = 30
 Ki = 0
-Kd = 0
+Kd = 30
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
 v = mpu.get_accel_data()['z']
