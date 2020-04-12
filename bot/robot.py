@@ -38,7 +38,7 @@ pt.change_speed_all(0)
 pt.move_front()
 
 while(True):
-    speed = input('speed')
+    speed = int(input('speed:\n'))
     pt.change_speed_all(speed)
 
 
