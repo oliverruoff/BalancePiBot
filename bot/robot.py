@@ -35,19 +35,19 @@ pt.change_speed_all(100)
 
 ###################### Testing
 
-multiplier = 10
+#multiplier = 10
 
-while True:
-    angle = mpu.get_accel_data()['z']
-    s = abs(angle)*multiplier
-    s = 55 if s < 55 else s
-    s = 100 if s > 100 else s
-    pt.change_speed_all(s)
+#while True:
+#    angle = mpu.get_accel_data()['z']
+#    s = abs(angle)*multiplier
+#    s = 55 if s < 55 else s
+#    s = 100 if s > 100 else s
+#    pt.change_speed_all(s)
 
-    if angle > 0:
-        pt.move_front()
-    else:
-        pt.move_back()
+#    if angle > 0:
+#        pt.move_front()
+#    else:
+#        pt.move_back()
 
 
 
@@ -76,7 +76,7 @@ try:
         control = min_motor_speed if control < min_motor_speed else control
         pt.change_speed_all(control)
         current_time = time.time()
-        print('V:', v, '| control:', control, '| Time elapsed (s):', current_time-old_time)
+        print('V:', v, '| control:', control, '| Time elapsed (s):', current_time-old_time, 'PID wights:', pid.components)
         old_time = current_time
         v = mpu.get_accel_data()['z']
 
