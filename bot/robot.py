@@ -35,8 +35,14 @@ pt.change_speed_all(100)
 
 ###################### Testing
 
+multiplier = 20
+
 while True:
     angle = mpu.get_accel_data()['z']
+    s = abs(angle)*multiplier
+    s = 55 if s < 55 else s
+    pt.change_speed_all(s)
+
     if angle > 0:
         pt.move_front()
     else:
