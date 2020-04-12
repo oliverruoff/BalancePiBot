@@ -31,8 +31,19 @@ pt = powertrain.powertrain(
     
 mpu = mpu6050.mpu6050(0x68)
 
-pt.change_speed_left(100)
-pt.change_speed_right(100)
+pt.change_speed_all(0)
+
+###################### Testing
+
+pt.move_front()
+
+while(True):
+    speed = input('speed')
+    pt.change_speed_all(speed)
+
+
+
+###################### PID
 
 setpoint = -0.38623979442138656
 
