@@ -34,14 +34,16 @@ mpu = mpu6050.mpu6050(0x68)
 pt.change_speed_left(100)
 pt.change_speed_right(100)
 
-setpoint = 0
+setpoint = -0.38623979442138656
 
-Kp = 20
-Ki = 1
+Kp = 30
+Ki = 0
 Kd = 0
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
 v = mpu.get_accel_data()['z']
+
+old_time = time.time()
 
 try:
    while(True):
@@ -52,7 +54,9 @@ try:
             pt.move_back()
         control = abs(control)
         pt.change_speed_all(control)
-        print('V:', v, '| control:', control)
+        current_time = time.time()
+        print('V:', v, '| control:', control, '| Time elapsed (s):', current_time-old_time)
+        old_time = current_time
         v = mpu.get_accel_data()['z']
 
 except KeyboardInterrupt:
