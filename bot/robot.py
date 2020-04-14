@@ -36,61 +36,17 @@ pt.change_speed_all(100)
 
 ###################### Testing
 
-def read_all(address):
-    gyro_scale = 131.0
-    accel_scale = 16384.0
-    raw_gyro_data = bus.read_i2c_block_data(address, 0x43, 6)
-    raw_accel_data = bus.read_i2c_block_data(address, 0x3b, 6)
-
-    gyro_scaled_x = twos_compliment((raw_gyro_data[0] << 8) + raw_gyro_data[1]) / gyro_scale
-    gyro_scaled_y = twos_compliment((raw_gyro_data[2] << 8) + raw_gyro_data[3]) / gyro_scale
-    gyro_scaled_z = twos_compliment((raw_gyro_data[4] << 8) + raw_gyro_data[5]) / gyro_scale
-
-    accel_scaled_x = twos_compliment((raw_accel_data[0] << 8) + raw_accel_data[1]) / accel_scale
-    accel_scaled_y = twos_compliment((raw_accel_data[2] << 8) + raw_accel_data[3]) / accel_scale
-    accel_scaled_z = twos_compliment((raw_accel_data[4] << 8) + raw_accel_data[5]) / accel_scale
-
-    return (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z)
-    
-def twos_compliment(val):
-    if (val >= 0x8000):
-        return -((65535 - val) + 1)
-    else:
-        return val
-
-def dist(a, b):
-    return math.sqrt((a * a) + (b * b))
-
-
-def get_y_rotation(x,y,z):
-    radians = math.atan2(x, dist(y,z))
-    return -math.degrees(radians)
-
-def get_x_rotation(x,y,z):
-    radians = math.atan2(y, dist(x,z))
-    return math.degrees(radians)
-
-#multiplier = 10
+angle_offest = sum([mpu.get_gyro_data()['z'] for i in range(1000)])/1000
 last_time = time.time()
 angle = 0
 while True:
     mpu_data = mpu.get_all_data()
-    gyro_z = mpu_data[1]['z']
+    gyro_z = mpu_data[1]['z'] - angle_offest
     curr_time = time.time()
     angle = angle + (gyro_z * (curr_time - last_time))
     print('Angle:', angle)
-    # print('Accel:', angle[0], 'Gyro:', angle[1])
-#    s = abs(angle)*multiplier
-#    s = 55 if s < 55 else s
-#    s = 100 if s > 100 else s
-#    pt.change_speed_all(s)
-
-#    if angle > 0:
-#        pt.move_front()
-#    else:
-#        pt.move_back()
-
-
+    print('Accel:', angle[0], 'Gyro:', angle[1])
+    
 ###################### Testing
 ###################### PID
 
