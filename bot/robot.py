@@ -37,8 +37,9 @@ pt.change_speed_all(100)
 
 #multiplier = 10
 
-#while True:
-#    angle = mpu.get_accel_data()['z']
+while True:
+    angle = mpu.get_accel_data()['z']
+    print(angle)
 #    s = abs(angle)*multiplier
 #    s = 55 if s < 55 else s
 #    s = 100 if s > 100 else s
