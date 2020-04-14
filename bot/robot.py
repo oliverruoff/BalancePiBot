@@ -71,10 +71,15 @@ def get_x_rotation(x,y,z):
     return math.degrees(radians)
 
 #multiplier = 10
-
+last_time = time.time()
+angle = 0
 while True:
-    angle = mpu.get_all_data()
-    print('Accel:', angle[0], 'Gyro:', angle[1])
+    mpu_data = mpu.get_all_data()
+    gyro_z = mpu_data[1]['z']
+    curr_time = time.time()
+    angle = angle + (gyro_z * (curr_time - last_time))
+    print('Angle:', angle)
+    # print('Accel:', angle[0], 'Gyro:', angle[1])
 #    s = abs(angle)*multiplier
 #    s = 55 if s < 55 else s
 #    s = 100 if s > 100 else s
