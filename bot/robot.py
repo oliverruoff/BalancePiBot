@@ -45,7 +45,8 @@ while True:
     curr_time = time.time()
     angle = angle + (gyro_z * (curr_time - last_time))
     print('Angle:', angle)
-    print('Accel:', mpu_data[0], 'Gyro:', mpu_data[1])
+    # print('Accel:', mpu_data[0], 'Gyro:', mpu_data[1])
+    time.sleep(0.1)
 
 ###################### Testing
 ###################### PID
