@@ -1,6 +1,6 @@
 import smbus
 
-from Kalman import KalmanAngle
+from sensing.Kalman import KalmanAngle
 
 class GyroAccel():
 

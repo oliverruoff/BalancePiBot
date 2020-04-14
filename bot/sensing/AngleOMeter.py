@@ -6,8 +6,8 @@
 #SDA - SDA (3 - Board)
 
 
-from Kalman import KalmanAngle
-from GyroAccel import GyroAccel
+from sensing.Kalman import KalmanAngle
+from sensing.GyroAccel import GyroAccel
 import smbus			#import SMBus module of I2C
 import time
 import math
