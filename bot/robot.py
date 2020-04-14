@@ -36,7 +36,7 @@ mpu = mpu6050.mpu6050(0x68)
 pt.change_speed_all(100)
 
 ###################### Testing
-
+'''
 kalmanX = Kalman.KalmanAngle()
 kalmanY = Kalman.KalmanAngle()
 
@@ -129,7 +129,7 @@ Ki = 0
 Kd = 0
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
-v = 0
+v = setpoint
 
 old_time = time.time()
 
@@ -141,7 +141,7 @@ while True:
     try:
 
         control = int(pid(v))
-        if control < 0:
+        if v > setpoint:
             pt.move_front()
         else:
             pt.move_back()
@@ -224,7 +224,7 @@ while True:
 
     except Exception as exc:
         flag += 1
-
+'''
 ###################### Testing
 ###################### PID
 
@@ -243,7 +243,7 @@ old_time = time.time()
 try:
    while(True):
         control = int(pid(v))
-        if control < 0:
+        if v < 0:
             pt.move_front()
         else:
             pt.move_back()
