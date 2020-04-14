@@ -228,7 +228,7 @@ while True:
 ###################### Testing
 ###################### PID
 
-setpoint = -0.38623979442138656
+setpoint = -1
 min_motor_speed = 55 # required for motors to start turning
 
 Kp = 30
@@ -243,7 +243,7 @@ old_time = time.time()
 try:
    while(True):
         control = int(pid(v))
-        if v < 0:
+        if v > setpoint:
             pt.move_front()
         else:
             pt.move_back()
