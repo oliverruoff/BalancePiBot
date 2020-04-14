@@ -36,7 +36,7 @@ pt.change_speed_all(100)
 
 ###################### Testing
 
-angle_offest = sum([mpu.get_gyro_data()['z'] for i in range(1000)])/1000
+angle_offest = sum([mpu.get_gyro_data()['z'] for i in range(100)])/100
 last_time = time.time()
 angle = 0
 while True:
@@ -45,8 +45,8 @@ while True:
     curr_time = time.time()
     angle = angle + (gyro_z * (curr_time - last_time))
     print('Angle:', angle)
-    print('Accel:', angle[0], 'Gyro:', angle[1])
-    
+    print('Accel:', mpu_data[0], 'Gyro:', mpu_data[1])
+
 ###################### Testing
 ###################### PID
 
