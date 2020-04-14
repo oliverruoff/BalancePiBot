@@ -74,7 +74,7 @@ def get_x_rotation(x,y,z):
 
 while True:
     angle = mpu.get_all_data()
-    print('Accel:', angle[0], 'Gyro:', angle[1], 'Temp:', angle[2])
+    print('Accel:', angle[0], 'Gyro:', angle[1])
 #    s = abs(angle)*multiplier
 #    s = 55 if s < 55 else s
 #    s = 100 if s > 100 else s
