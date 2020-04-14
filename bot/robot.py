@@ -36,7 +36,7 @@ mpu = mpu6050.mpu6050(0x68)
 pt.change_speed_all(100)
 
 ###################### Testing
-'''
+
 kalmanX = Kalman.KalmanAngle()
 kalmanY = Kalman.KalmanAngle()
 
@@ -224,14 +224,14 @@ while True:
 
     except Exception as exc:
         flag += 1
-'''
+
 ###################### Testing
 ###################### PID
 
-setpoint = -1
-min_motor_speed = 55 # required for motors to start turning
+setpoint = 0
+min_motor_speed = 40 # required for motors to start turning (normally around 55)
 
-Kp = 30
+Kp = 15
 Ki = 0
 Kd = 0
 
