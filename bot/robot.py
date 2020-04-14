@@ -195,7 +195,7 @@ while True:
         else:
             y_angle_offset = sum(y_init_values)/len(y_init_values)
         if y_angle_offset != 0:
-            print("Angle Y: " + str(kalAngleY))
+            print("Angle Y: " + str(kalAngleY+y_angle_offset))
         # print(str(roll)+"  "+str(gyroXAngle)+"  "+str(compAngleX)+"  "+str(kalAngleX)+"  "+str(pitch)+"  "+str(gyroYAngle)+"  "+str(compAngleY)+"  "+str(kalAngleY))
         # time.sleep(0.005)
 
