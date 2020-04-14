@@ -149,4 +149,4 @@ class AngleOMeter():
 			time.sleep(0.005)
 
 		except Exception as exc:
-			flag += 1
+			self.flag += 1
