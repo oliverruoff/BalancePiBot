@@ -75,9 +75,9 @@ class AngleOMeter():
 			return value
 
 	def get_final_angles(self):
-		if(flag > 100): #Problem with the connection
+		if(self.flag > 100): #Problem with the connection
 			print("There is a problem with the connection")
-			flag=0
+			self.flag=0
 			return
 		try:
 			#Read Accelerometer raw value
