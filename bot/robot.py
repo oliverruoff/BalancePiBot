@@ -72,82 +72,9 @@ def get_x_rotation(x,y,z):
 
 #multiplier = 10
 
-address = 0x68  # This is the address value read via the i2cdetect command
-
-bus = smbus.SMBus(1) # for Revision 2 boards
-
-# Now wake the 6050 up as it starts in sleep mode
-bus.write_byte_data(address, 0x6b, 0)
-
-now = time.time()
-
-K = 0.98
-K1 = 1 - K
-
-time_diff = 0.01
-
-(gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all(address)
-
-last_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-last_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-
-gyro_offset_x = gyro_scaled_x 
-gyro_offset_y = gyro_scaled_y
-
-gyro_total_x = (last_x) - gyro_offset_x
-gyro_total_y = (last_y) - gyro_offset_y
-
-setpoint = abs(-84.42)
-min_motor_speed = 55 # required for motors to start turning
-
-Kp = 30
-Ki = 0
-Kd = 0
-
-pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.007, output_limits=(-100, 100))
-v = mpu.get_accel_data()['z']
-
-old_time = time.time()
-
-last_total_y = 0
-
 while True:
-    time.sleep(time_diff - 0.005) 
-    
-    (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all(address)
-    
-    gyro_scaled_x -= gyro_offset_x
-    gyro_scaled_y -= gyro_offset_y
-    
-    gyro_x_delta = (gyro_scaled_x * time_diff)
-    gyro_y_delta = (gyro_scaled_y * time_diff)
-
-    gyro_total_x += gyro_x_delta
-    gyro_total_y += gyro_y_delta
-
-    rotation_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-    rotation_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
-
-    last_x = K * (last_x + gyro_x_delta) + (K1 * rotation_x)
-    last_y = K * (last_y + gyro_y_delta) + (K1 * rotation_y)
-    
-    v = abs(last_y)
-
-    control = int(pid(v))
-    if gyro_total_y > last_total_y:
-        pt.move_front()
-    else:
-        pt.move_back()
-    last_total_y = gyro_total_y
-    control = abs(control)
-    control = min_motor_speed if control < min_motor_speed else control
-    pt.change_speed_all(control)
-    current_time = time.time()
-    print('V:', v, '| control:', control, '| Time elapsed (s):', current_time-old_time, 'PID wights:', pid.components)
-    old_time = current_time
-    v = abs(last_y)
-    
-    print( "Time: {0:.4f} | Rot_X: {1:.2f} | Gyro_tot_X: {2:.2f} | Last_X: {3:.2f} | Rot_Y: {4:.2f} | Gyro_tot_Y: {5:.2f} | Last Y: {6:.2f}".format( time.time() - now, (rotation_x), (gyro_total_x), (last_x), (rotation_y), (gyro_total_y), (last_y)))
+    angle = mpu.get_all_data()
+    print('Accel:', angle[0], 'Gyro:', angle[1], 'Temp:', angle[2])
 #    s = abs(angle)*multiplier
 #    s = 55 if s < 55 else s
 #    s = 100 if s > 100 else s
