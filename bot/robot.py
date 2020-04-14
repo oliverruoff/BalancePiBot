@@ -1,12 +1,11 @@
 import time
 import math
-import smbus
 
 import RPi.GPIO as GPIO
 from simple_pid import PID
 
 from movement import powertrain
-from sensing import mpu6050, Kalman
+from sensing import mpu6050
 
 GPIO.setmode(GPIO.BCM)
 
