@@ -111,13 +111,13 @@ Device_Address = 0x68   # MPU6050 device address
 
 ############testing
 
-while True:
+# while True:
 
-    x,y,z = get_full_accel_data()
-    x = str(x)[:4]
-    y = str(y)[:4]
-    z = str(z)[:4]
-    print('x:', x, '| y:', y, '| z:', z)
+  #  x,y,z = get_full_accel_data()
+  #  x = str(x)[:4]
+  #  y = str(y)[:4]
+  #  z = str(z)[:4]
+  #  print('x:', x, '| y:', y, '| z:', z)
 
 ############testing
 
@@ -136,9 +136,11 @@ while True:
         last_time = curr_time
 
         gyro_raw = get_new_gyro_angle('y', time_diff, 0, gyro_drift, True)
+        accel_raw = get_full_accel_data()
+        accel_dir = 1 if accel_raw[2] > 0 else -1
 
         gyro_angle = gyro_angle + gyro_raw * time_diff
-        accel_angle = math.degrees(angle(get_full_accel_data(), (1,0,0))) - accel_avg
+        accel_angle = (math.degrees(angle(accel_raw, (1,0,0))) - accel_avg) * accel_dir
 
         complementary_filter_angle = (GYRO_WEIGHT * (complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*accel_angle)
 
