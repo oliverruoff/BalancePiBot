@@ -5,7 +5,6 @@
 import smbus                    #import SMBus module of I2C
 from time import sleep          #import
 import time
-import numpy as np
 import math
 
 #some MPU6050 Registers and their Address
@@ -85,23 +84,14 @@ def get_full_accel_data():
     z = read_raw_data(ACCEL_ZOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
     return (x,y,z)
 
-def unit_vector(vector):
-    """ Returns the unit vector of the vector.  """
-    return vector / np.linalg.norm(vector)
+def dotproduct(v1, v2):
+  return sum((a*b) for a, b in zip(v1, v2))
 
-def angle_between(v1, v2):
-    """ Returns the angle in radians between vectors 'v1' and 'v2'::
+def length(v):
+  return math.sqrt(dotproduct(v, v))
 
-            >>> angle_between((1, 0, 0), (0, 1, 0))
-            1.5707963267948966
-            >>> angle_between((1, 0, 0), (1, 0, 0))
-            0.0
-            >>> angle_between((1, 0, 0), (-1, 0, 0))
-            3.141592653589793
-    """
-    v1_u = unit_vector(v1)
-    v2_u = unit_vector(v2)
-    return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+def angle(v1, v2):
+  return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
 
 ### START
 
@@ -112,7 +102,7 @@ MPU_Init()
 SAMPLES = 100
 gyro_drift = sum([read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(SAMPLES)])/SAMPLES
 # accel_avg = sum([get_new_accel_angle('z', 0) for i in range(SAMPLES)])/SAMPLES
-print('Gyro_Drift:', gyro_drift, '| Accel_Avg:', accel_avg)
+# print('Gyro_Drift:', gyro_drift, '| Accel_Avg:', accel_avg)
 gyro_angle = 0
 last_time = time.time()
 while True:
@@ -121,7 +111,7 @@ while True:
         last_time = curr_time
         gyro_angle = get_new_gyro_angle('y', time_diff, gyro_angle, gyro_drift)
 
-        accel_angle = math.degrees(angle_between(get_full_accel_data(), (1,0,0)))
+        accel_angle = math.degrees(angle(get_full_accel_data(), (1,0,0)))
 
         # accel_angle = get_new_accel_angle('y', accel_avg)
         freq = 1 / time_diff
