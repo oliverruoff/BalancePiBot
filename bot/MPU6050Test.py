@@ -114,9 +114,9 @@ Device_Address = 0x68   # MPU6050 device address
 while True:
 
     x,y,z = get_full_accel_data()
-    x = x[:4]
-    y = y[:4]
-    z = z[:4]
+    x = str(x)[:4]
+    y = str(y)[:4]
+    z = str(z)[:4]
     print('x:', x, '| y:', y, '| z:', z)
 
 ############testing
