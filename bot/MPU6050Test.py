@@ -93,5 +93,8 @@ while True:
         accel = get_new_accel_angle('y')
         accelX = get_new_accel_angle('x')
         accelZ = get_new_accel_angle('z')
+
+        accelZ = accelZ * 180 + 180
+
         freq = 1 / time_diff
         print('Frequence:', int(freq), 'Hz | Angle:', int(angle), '| Accel:', int(accelX), int(accel), int(accelZ))
