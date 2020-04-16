@@ -109,6 +109,20 @@ def get_gyro_drift(samples=100):
 bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
 Device_Address = 0x68   # MPU6050 device address
 
+############testing
+
+while True:
+
+    x,y,z = get_full_accel_data()
+    x = x[:4]
+    y = y[:4]
+    z = z[:4]
+    print('x:', x, '| y:', y, '| z:', z)
+
+############testing
+
+GYRO_WEIGHT = 0.99
+
 MPU_Init()
 gyro_drift = get_gyro_drift()
 accel_avg = get_accel_error()
@@ -126,7 +140,7 @@ while True:
         gyro_angle = gyro_angle + gyro_raw * time_diff
         accel_angle = math.degrees(angle(get_full_accel_data(), (1,0,0))) - accel_avg
 
-        complementary_filter_angle = 0.999 * (complementary_filter_angle + gyro_raw * time_diff) + 0.001*accel_angle
+        complementary_filter_angle = (GYRO_WEIGHT * (complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*accel_angle)
 
         # accel_angle = get_new_accel_angle('y', accel_avg)
         freq = 1 / time_diff
