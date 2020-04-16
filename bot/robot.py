@@ -36,10 +36,17 @@ pt.change_speed_all(100)
 
 ###################### Testing
 
+last_time = time.time()
+sleep_time = 0.1
 angle = 0
 while (True):
-    print(mpu.get_gyro_data())
-    time.sleep(0.1)
+    gyro = mpu.get_gyro_data()
+    curr_time = time.time()
+    time_diff = curr_time - last_time
+    last_time = curr_time
+    angle = time_diff * gyro + angle
+    print('Time Diff:', time_diff, '| Angle:', angle)
+    time.sleep(sleep_time)
 
 ###################### Testing
 ###################### PID
