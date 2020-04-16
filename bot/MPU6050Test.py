@@ -64,7 +64,7 @@ def get_new_gyro_angle(axis, time_diff_s, old_angle=0, gyro_drift = 0.4827480916
     angle = old_angle + ((raw-gyro_drift) * time_diff_s * DEGREE_SCALE_CONSTANT)
     return angle
 
-def get_new_accel_angle(axis):
+def get_new_accel_angle(axis, initial_angle=0):
     if axis == 'x':
         raw = read_raw_data(ACCEL_XOUT_H)
     elif axis == 'y':
@@ -72,7 +72,10 @@ def get_new_accel_angle(axis):
     elif axis == 'z':
         raw = read_raw_data(ACCEL_ZOUT_H)
     raw = raw / MPU_SENSOR_ACCEL_CONSTANT
-    return raw
+
+    angle = raw * 180 + 180 - initial_angle
+
+    return angle
 
 ### START
 
@@ -82,19 +85,14 @@ Device_Address = 0x68   # MPU6050 device address
 MPU_Init()
 
 gyro_drift = sum([read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(100)])/100
-
-angle = 0
+initial_accel_angle = get_new_accel_angle('z', 0)
+gyro_angle = 0
 last_time = time.time()
 while True:
         curr_time = time.time()
         time_diff = curr_time - last_time
         last_time = curr_time
-        angle = get_new_gyro_angle('y', time_diff, angle, gyro_drift)
-        accel = get_new_accel_angle('y')
-        accelX = get_new_accel_angle('x')
-        accelZ = get_new_accel_angle('z')
-
-        accelZ = accelZ * 180 + 180
-
+        gyro_angle = get_new_gyro_angle('y', time_diff, gyro_angle, gyro_drift)
+        accel_angle = get_new_accel_angle('y', initial_accel_angle)
         freq = 1 / time_diff
-        print('Frequence:', int(freq), 'Hz | Angle:', int(angle), '| Accel:', int(accelX), int(accel), int(accelZ))
+        print('Frequence:', int(freq), 'Hz | GyroAngle:', int(gyro_angle), '| AccelAngle:', int(accel_angle))
