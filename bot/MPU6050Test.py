@@ -126,7 +126,7 @@ while True:
         gyro_angle = gyro_angle + gyro_raw * time_diff
         accel_angle = math.degrees(angle(get_full_accel_data(), (1,0,0))) - accel_avg
 
-        complementary_filter_angle = 0.98 * (complementary_filter_angle + gyro_raw * time_diff) + 0.02*accel_angle
+        complementary_filter_angle = 0.999 * (complementary_filter_angle + gyro_raw * time_diff) + 0.001*accel_angle
 
         # accel_angle = get_new_accel_angle('y', accel_avg)
         freq = 1 / time_diff
