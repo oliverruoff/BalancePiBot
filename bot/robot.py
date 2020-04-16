@@ -35,16 +35,17 @@ mpu = mpu6050.mpu6050()
 pt.change_speed_all(100)
 
 ###################### Testing
-
-
+while True:
+    i = input('speed?\n')
+    pt.change_speed_all(i)
 
 ###################### Testing
 ###################### PID
 
 setpoint = -1
-min_motor_speed = 50 # required for motors to start turning (normally around 55)
+min_motor_speed = 0 # required for motors to start turning (normally around 55)
 
-Kp = 5
+Kp = 8
 Ki = 0
 Kd = 0
 
