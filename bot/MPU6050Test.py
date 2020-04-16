@@ -91,5 +91,7 @@ while True:
         last_time = curr_time
         angle = get_new_gyro_angle('y', time_diff, angle, gyro_drift)
         accel = get_new_accel_angle('y')
+        accelX = get_new_accel_angle('x')
+        accelZ = get_new_accel_angle('z')
         freq = 1 / time_diff
-        print('Frequence:', freq, 'Hz | Angle:', angle, '| Accel:', accel)
+        print('Frequence:', freq, 'Hz | Angle:', angle, '| Accel:', accelX, accel, accelZ)
