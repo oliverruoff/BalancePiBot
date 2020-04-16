@@ -73,6 +73,8 @@ def get_new_accel_angle(axis, initial_angle=0):
         raw = read_raw_data(ACCEL_ZOUT_H)
     raw = raw / MPU_SENSOR_ACCEL_CONSTANT
 
+    print(raw*180+180)
+
     angle = raw * 180 + 180 - initial_angle
 
     return angle
