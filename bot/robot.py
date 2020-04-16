@@ -36,7 +36,10 @@ pt.change_speed_all(100)
 
 ###################### Testing
 
-
+angle = 0
+while (True):
+    print(mpu.get_gyro_data())
+    time.sleep(0.1)
 
 ###################### Testing
 ###################### PID
