@@ -83,9 +83,10 @@ bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
 Device_Address = 0x68   # MPU6050 device address
 
 MPU_Init()
-
-gyro_drift = sum([read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(100)])/100
-initial_accel_angle = get_new_accel_angle('z', 0)
+SAMPLES = 100
+gyro_drift = sum([read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(SAMPLES)])/SAMPLES
+accel_avg = sum([get_new_accel_angle('z', 0) for i in range(SAMPLES)])/SAMPLES
+print('Gyro_Drift:', gyro_drift, '| Accel_Avg:', accel_avg)
 gyro_angle = 0
 last_time = time.time()
 while True:
@@ -93,6 +94,6 @@ while True:
         time_diff = curr_time - last_time
         last_time = curr_time
         gyro_angle = get_new_gyro_angle('y', time_diff, gyro_angle, gyro_drift)
-        accel_angle = get_new_accel_angle('y', initial_accel_angle)
+        accel_angle = get_new_accel_angle('y', accel_avg)
         freq = 1 / time_diff
         print('Frequence:', int(freq), 'Hz | GyroAngle:', int(gyro_angle), '| AccelAngle:', int(accel_angle))
