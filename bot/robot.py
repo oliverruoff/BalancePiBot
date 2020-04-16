@@ -35,9 +35,9 @@ mpu = mpu6050.mpu6050()
 pt.change_speed_all(100)
 
 ###################### Testing
-while True:
-    i = input('speed?\n')
-    pt.change_speed_all(i)
+#while True:
+#    i = int(input('speed?\n'))
+#    pt.change_speed_all(i)
 
 ###################### Testing
 ###################### PID
