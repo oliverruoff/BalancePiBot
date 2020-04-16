@@ -35,8 +35,8 @@ class mpu6050:
     def __init__(self):
 
         self.MPU_Init()
-        self.gyro_drift = self.get_gyro_drift()
-        self.accel_avg = self.get_accel_error()
+        self.gyro_drift = 0.4818320610687028 # self.get_gyro_drift()
+        self.accel_avg = 2.921613326614945 # self.get_accel_error()
         print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
         self.gyro_angle = 0
         self.complementary_filter_angle = 0
