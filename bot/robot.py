@@ -44,7 +44,7 @@ while (True):
     curr_time = time.time()
     time_diff = curr_time - last_time
     last_time = curr_time
-    angle = time_diff * gyro + angle
+    angle = time_diff * gyro['y'] + angle
     print('Time Diff:', time_diff, '| Angle:', angle)
     time.sleep(sleep_time)
 
