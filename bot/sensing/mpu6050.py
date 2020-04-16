@@ -1,242 +1,149 @@
-import smbus
+'''
+        Read Gyro and Accelerometer by Interfacing Raspberry Pi with MPU6050 using Python
+        http://www.electronicwings.com
+'''
+import smbus                    #import SMBus module of I2C
+from time import sleep          #import
 import time
+import math
+
+#some MPU6050 Registers and their Address
+PWR_MGMT_1   = 0x6B
+SMPLRT_DIV   = 0x19
+CONFIG       = 0x1A
+GYRO_CONFIG  = 0x1B
+INT_ENABLE   = 0x38
+ACCEL_XOUT_H = 0x3B
+ACCEL_YOUT_H = 0x3D
+ACCEL_ZOUT_H = 0x3F
+GYRO_XOUT_H  = 0x43
+GYRO_YOUT_H  = 0x45
+GYRO_ZOUT_H  = 0x47
+
+#Full scale range +/- 250 degree/C as per sensitivity scale factor
+MPU_SENSOR_GYRO_CONSTANT = 131.0
+MPU_SENSOR_ACCEL_CONSTANT = 16384.0
+
+bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
+Device_Address = 0x68   # MPU6050 device address
+
+# weight for the gyro angle for complementary filter 1-GYRO_WEIGHT is accel weight
+GYRO_WEIGHT = 0.99
 
 class mpu6050:
 
-    # Global Variables
-    GRAVITIY_MS2 = 9.80665
-    address = None
-    bus = None
+    def __init__(self):
 
-    # Scale Modifiers
-    ACCEL_SCALE_MODIFIER_2G = 16384.0
-    ACCEL_SCALE_MODIFIER_4G = 8192.0
-    ACCEL_SCALE_MODIFIER_8G = 4096.0
-    ACCEL_SCALE_MODIFIER_16G = 2048.0
+        self.MPU_Init()
+        self.gyro_drift = self.get_gyro_drift()
+        self.accel_avg = self.get_accel_error()
+        print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
+        self.gyro_angle = 0
+        self.complementary_filter_angle = 0
+        self.accel_angle = 0
+        self.last_time = time.time()
 
-    GYRO_SCALE_MODIFIER_250DEG = 131.0
-    GYRO_SCALE_MODIFIER_500DEG = 65.5
-    GYRO_SCALE_MODIFIER_1000DEG = 32.8
-    GYRO_SCALE_MODIFIER_2000DEG = 16.4
+    def MPU_Init(self):
+            #write to sample rate register
+            bus.write_byte_data(Device_Address, SMPLRT_DIV, 7)
 
-    # Pre-defined ranges
-    ACCEL_RANGE_2G = 0x00
-    ACCEL_RANGE_4G = 0x08
-    ACCEL_RANGE_8G = 0x10
-    ACCEL_RANGE_16G = 0x18
+            #Write to power management register
+            bus.write_byte_data(Device_Address, PWR_MGMT_1, 1)
 
-    GYRO_RANGE_250DEG = 0x00
-    GYRO_RANGE_500DEG = 0x08
-    GYRO_RANGE_1000DEG = 0x10
-    GYRO_RANGE_2000DEG = 0x18
+            #Write to Configuration register
+            bus.write_byte_data(Device_Address, CONFIG, 0)
 
-    # MPU-6050 Registers
-    PWR_MGMT_1 = 0x6B
-    PWR_MGMT_2 = 0x6C
+            #Write to Gyro configuration register
+            bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
 
-    ACCEL_XOUT0 = 0x3B
-    ACCEL_YOUT0 = 0x3D
-    ACCEL_ZOUT0 = 0x3F
+            #Write to interrupt enable register
+            bus.write_byte_data(Device_Address, INT_ENABLE, 1)
 
-    TEMP_OUT0 = 0x41
+    def read_raw_data(self, addr):
+            #Accelero and Gyro value are 16-bit
+            high = bus.read_byte_data(Device_Address, addr)
+            low = bus.read_byte_data(Device_Address, addr+1)
 
-    GYRO_XOUT0 = 0x43
-    GYRO_YOUT0 = 0x45
-    GYRO_ZOUT0 = 0x47
+            #concatenate higher and lower value
+            value = ((high << 8) | low)
 
-    ACCEL_CONFIG = 0x1C
-    GYRO_CONFIG = 0x1B
-
-    def __init__(self, address, bus=1):
-        self.address = address
-        self.bus = smbus.SMBus(bus)
-        # Wake up the MPU-6050 since it starts in sleep mode
-        self.bus.write_byte_data(self.address, self.PWR_MGMT_1, 0x00)
-
-    # I2C communication methods
-
-    def read_i2c_word(self, register):
-        # Read the data from the registers
-        high = self.bus.read_byte_data(self.address, register)
-        low = self.bus.read_byte_data(self.address, register + 1)
-
-        value = (high << 8) + low
-
-        if (value >= 0x8000):
-            return -((65535 - value) + 1)
-        else:
+            #to get signed value from mpu6050
+            if(value > 32768):
+                    value = value - 65536
             return value
 
-    def set_accel_range(self, accel_range):
-        # First change it to 0x00 to make sure we write the correct value later
-        self.bus.write_byte_data(self.address, self.ACCEL_CONFIG, 0x00)
+    def get_new_gyro_angle(self, axis, time_diff_s, old_angle=0, gyro_drift = 0.4827480916030538, raw=False):
+        DEGREE_SCALE_CONSTANT = 8
+        if axis == 'x':
+            raw = self.read_raw_data(GYRO_XOUT_H)
+        elif axis == 'y':
+            raw = self.read_raw_data(GYRO_YOUT_H)
+        elif axis == 'z':
+            raw = self.read_raw_data(GYRO_ZOUT_H)
 
-        # Write the new range to the ACCEL_CONFIG register
-        self.bus.write_byte_data(self.address, self.ACCEL_CONFIG, accel_range)
+        raw = raw / MPU_SENSOR_GYRO_CONSTANT
+        raw = (raw-gyro_drift) * DEGREE_SCALE_CONSTANT
+        if raw:
+            return raw
 
-    def read_accel_range(self, raw = False):
-        raw_data = self.bus.read_byte_data(self.address, self.ACCEL_CONFIG)
+        angle = old_angle + (raw * time_diff_s)
+        return angle
 
-        if raw is True:
-            return raw_data
-        elif raw is False:
-            if raw_data == self.ACCEL_RANGE_2G:
-                return 2
-            elif raw_data == self.ACCEL_RANGE_4G:
-                return 4
-            elif raw_data == self.ACCEL_RANGE_8G:
-                return 8
-            elif raw_data == self.ACCEL_RANGE_16G:
-                return 16
-            else:
-                return -1
+    def get_new_accel_angle(self, axis, initial_angle=0):
+        if axis == 'x':
+            raw = self.read_raw_data(ACCEL_XOUT_H)
+        elif axis == 'y':
+            raw = self.read_raw_data(ACCEL_YOUT_H)
+        elif axis == 'z':
+            raw = self.read_raw_data(ACCEL_ZOUT_H)
+        raw = raw / MPU_SENSOR_ACCEL_CONSTANT
 
-    def get_accel_data(self, g = False):
-        x = self.read_i2c_word(self.ACCEL_XOUT0)
-        y = self.read_i2c_word(self.ACCEL_YOUT0)
-        z = self.read_i2c_word(self.ACCEL_ZOUT0)
+        angle = raw * 180 + 180 - initial_angle
 
-        accel_scale_modifier = None
-        accel_range = self.read_accel_range(True)
+        return angle
 
-        if accel_range == self.ACCEL_RANGE_2G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
-        elif accel_range == self.ACCEL_RANGE_4G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_4G
-        elif accel_range == self.ACCEL_RANGE_8G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_8G
-        elif accel_range == self.ACCEL_RANGE_16G:
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_16G
-        else:
-            print("Unknown range-accel_scale_modifier set to self.ACCEL_SCALE_MODIFIER_2G")
-            accel_scale_modifier = self.ACCEL_SCALE_MODIFIER_2G
+    def get_full_accel_data(self):
+        x = self.read_raw_data(ACCEL_XOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+        y = self.read_raw_data(ACCEL_YOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+        z = self.read_raw_data(ACCEL_ZOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+        return (x,y,z)
 
-        x = x / accel_scale_modifier
-        y = y / accel_scale_modifier
-        z = z / accel_scale_modifier
+    def dotproduct(self, v1, v2):
+        return sum((a*b) for a, b in zip(v1, v2))
 
-        if g is True:
-            return {'x': x, 'y': y, 'z': z}
-        elif g is False:
-            x = x * self.GRAVITIY_MS2
-            y = y * self.GRAVITIY_MS2
-            z = z * self.GRAVITIY_MS2
-            return {'x': x, 'y': y, 'z': z}
+    def length(self, v):
+        return math.sqrt(self.dotproduct(v, v))
 
-    def set_gyro_range(self, gyro_range):
-        # First change it to 0x00 to make sure we write the correct value later
-        self.bus.write_byte_data(self.address, self.GYRO_CONFIG, 0x00)
+    def angle(self, v1, v2):
+        return math.acos(self.dotproduct(v1, v2) / (self.length(v1) * self.length(v2)))
 
-        # Write the new range to the ACCEL_CONFIG register
-        self.bus.write_byte_data(self.address, self.GYRO_CONFIG, gyro_range)
+    def get_accel_error(self, samples=100):
+        return sum([math.degrees(self.angle(self.get_full_accel_data(), (1,0,0))) for i in range(samples)])/samples
 
-    def read_gyro_range(self, raw = False):
-        raw_data = self.bus.read_byte_data(self.address, self.GYRO_CONFIG)
+    def get_gyro_drift(self, samples=100):
+        return sum([self.read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(samples)])/samples
 
-        if raw is True:
-            return raw_data
-        elif raw is False:
-            if raw_data == self.GYRO_RANGE_250DEG:
-                return 250
-            elif raw_data == self.GYRO_RANGE_500DEG:
-                return 500
-            elif raw_data == self.GYRO_RANGE_1000DEG:
-                return 1000
-            elif raw_data == self.GYRO_RANGE_2000DEG:
-                return 2000
-
-            else:
-                return -1
-
-    def get_gyro_data(self):
-        x = self.read_i2c_word(self.GYRO_XOUT0)
-        y = self.read_i2c_word(self.GYRO_YOUT0)
-        z = self.read_i2c_word(self.GYRO_ZOUT0)
-
-        gyro_scale_modifier = None
-        gyro_range = self.read_gyro_range(True)
-
-        if gyro_range == self.GYRO_RANGE_250DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
-        elif gyro_range == self.GYRO_RANGE_500DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_500DEG
-        elif gyro_range == self.GYRO_RANGE_1000DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_1000DEG
-        elif gyro_range == self.GYRO_RANGE_2000DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_2000DEG
-        else:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
-
-        x = x / gyro_scale_modifier
-        y = y / gyro_scale_modifier
-        z = self.read_i2c_word(self.GYRO_ZOUT0)
-
-        gyro_scale_modifier = None
-        gyro_range = self.read_gyro_range(True)
-
-        if gyro_range == self.GYRO_RANGE_250DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
-        elif gyro_range == self.GYRO_RANGE_500DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_500DEG
-        elif gyro_range == self.GYRO_RANGE_1000DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_1000DEG
-        elif gyro_range == self.GYRO_RANGE_2000DEG:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_2000DEG
-        else:
-            gyro_scale_modifier = self.GYRO_SCALE_MODIFIER_250DEG
-
-        x = x / gyro_scale_modifier
-        y = y / gyro_scale_modifier
-        z = z / gyro_scale_modifier
-
-        return {'x': x, 'y': y, 'z': z}
-
-    def get_temp(self):
-        """Reads the temperature from the onboard temperature sensor of the MPU-6050.
-        Returns the temperature in degrees Celcius.
-        """
-        # Get the raw data
-        raw_temp = self.read_i2c_word(self.TEMP_OUT0)
-
-        # Get the actual temperature using the formule given in the
-        # MPU-6050 Register Map and Descriptions revision 4.2, page 30
-        actual_temp = (raw_temp / 340) + 36.53
-
-        # Return the temperature
-        return actual_temp
-
-    def get_all_data(self):
-        temp = self.get_temp()
-        accel = self.get_accel_data()
-        gyro = self.get_gyro_data()
-
-        return [accel, gyro, temp]
-
-
-    def get_gyro_z_sensor_drift(self, samples=10):
+    def get_angle(self):
         '''
-        Fills field variable "self.gyro_z_sensor_drift", which is used in
-        gyro sensor functions. (Call this function at startup of robot.)
+        Simply call this function in a loop to get angles.
+        Output:
+        [0] = angle from complementary filter
+        [1] = angle from gyro
+        [2] = angle from accel
+        [3] = Sampling frequency
         '''
-        print('Getting current gyro z sensor drift...')
-        val_sum = 0
-        for _ in range(samples):
-            val_sum += self.get_gyro_data()['z']
-            time.sleep(0.1)
-        gyro_z_sensor_drift = val_sum/samples
-        print('Gyro z sensor drift:', gyro_z_sensor_drift)
-        return gyro_z_sensor_drift
-# mpu = mpu6050(0x68)
+        curr_time = time.time()
+        time_diff = curr_time - self.last_time
+        self.last_time = curr_time
 
-#if __name__ == "__main__":
-#    while (1):
-#        try:
-#           accel_data = mpu.get_accel_data()
-#           gyro_data = mpu.get_gyro_data()
-#
-#           print("Ax:{:.4f}\tAy:{:.4f}\tAz:{:.4f}\tGx:{:.4f}\tGy:{:.4f}\tGz:{:.4f} ".format(accel_data['x'], accel_data['y'], accel_data['z'], gyro_data['x'], gyro_data['y'], gyro_data['z']))
-#
-#        except KeyboardInterrupt:
-#            break
-#
-#        time.sleep(0.5)
+        gyro_raw = self.get_new_gyro_angle('y', time_diff, 0, self.gyro_drift, True)
+        accel_raw = self.get_full_accel_data()
+        accel_dir = 1 if accel_raw[2] > 0 else -1
+
+        self.gyro_angle = self.gyro_angle + gyro_raw * time_diff
+        self.accel_angle = (math.degrees(self.angle(accel_raw, (1,0,0))) - self.accel_avg) * accel_dir
+
+        self.complementary_filter_angle = (GYRO_WEIGHT * (self.complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*self.accel_angle)
+
+        freq = 1 / time_diff
+        return (self.complementary_filter_angle, self.gyro_angle, self.accel_angle, freq)
