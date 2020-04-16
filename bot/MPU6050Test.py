@@ -87,9 +87,8 @@ Device_Address = 0x68   # MPU6050 device address
 MPU_Init()
 SAMPLES = 100
 gyro_drift = sum([read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(SAMPLES)])/SAMPLES
-accel_sample_set = [get_new_accel_angle('z', 0) for i in range(SAMPLES)] # REMOVE
 accel_avg = sum([get_new_accel_angle('z', 0) for i in range(SAMPLES)])/SAMPLES
-print('Gyro_Drift:', gyro_drift, '| Accel_Avg:', accel_avg, 'MIN:', min(accel_sample_set), '| MAX:', max(accel_sample_set))
+print('Gyro_Drift:', gyro_drift, '| Accel_Avg:', accel_avg)
 gyro_angle = 0
 last_time = time.time()
 while True:
