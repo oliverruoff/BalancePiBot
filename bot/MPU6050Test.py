@@ -6,6 +6,7 @@ import smbus                    #import SMBus module of I2C
 from time import sleep          #import
 import time
 import numpy as np
+import math
 
 #some MPU6050 Registers and their Address
 PWR_MGMT_1   = 0x6B
@@ -120,7 +121,7 @@ while True:
         last_time = curr_time
         gyro_angle = get_new_gyro_angle('y', time_diff, gyro_angle, gyro_drift)
 
-        accel_angle = angle_between(degrees(get_full_accel_data(), (1,0,0)))
+        accel_angle = math.degrees(angle_between(get_full_accel_data(), (1,0,0)))
 
         # accel_angle = get_new_accel_angle('y', accel_avg)
         freq = 1 / time_diff
