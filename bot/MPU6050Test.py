@@ -109,18 +109,6 @@ def get_gyro_drift(samples=100):
 bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
 Device_Address = 0x68   # MPU6050 device address
 
-############testing
-
-# while True:
-
-  #  x,y,z = get_full_accel_data()
-  #  x = str(x)[:4]
-  #  y = str(y)[:4]
-  #  z = str(z)[:4]
-  #  print('x:', x, '| y:', y, '| z:', z)
-
-############testing
-
 GYRO_WEIGHT = 0.99
 
 MPU_Init()
