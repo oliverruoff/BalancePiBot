@@ -42,12 +42,12 @@ pt.change_speed_all(100)
 ###################### Testing
 ###################### PID
 
-setpoint = -1
-min_motor_speed = 0 # required for motors to start turning (normally around 55)
+setpoint = -1.3
+min_motor_speed = 40 # required for motors to start turning (normally around 55)
 
-Kp = 8
+Kp = 13
 Ki = 0
-Kd = 0
+Kd = 1.3
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.008, output_limits=(-100, 100))
 old_time = time.time()
