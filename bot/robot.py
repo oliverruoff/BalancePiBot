@@ -7,6 +7,17 @@ from simple_pid import PID
 from movement import powertrain
 from sensing import mpu6050
 
+# IMPORTANT VARIABLES TO CONFIGURE -------------------
+
+setpoint = -1.3
+min_motor_speed = 40 # required for motors to start turning (normally around 55)
+
+Kp = 13
+Ki = 0
+Kd = 1.3
+
+# IMPORTANT VARIABLES TO CONFIGURE -------------------
+
 GPIO.setmode(GPIO.BCM)
 
 # powertrain
@@ -52,13 +63,6 @@ def is_stuck(angle, min_angle=-20, max_angle=20):
 
 ###################### Testing
 ###################### PID
-
-setpoint = -1.3
-min_motor_speed = 40 # required for motors to start turning (normally around 55)
-
-Kp = 13
-Ki = 0
-Kd = 1.3
 
 pid = PID(Kp, Ki, Kd, setpoint=setpoint, sample_time=0.008, output_limits=(-100, 100))
 old_time = time.time()
