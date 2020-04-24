@@ -32,7 +32,14 @@ pt = powertrain.powertrain(
     
 mpu = mpu6050.mpu6050()
 
-pt.change_speed_all(100)
+pt.change_speed_all(0)
+
+def emergency_stop_check(angle, sleep_time=0.2):
+    if angle > 25 or angle < -20:
+        pt.break_motors()
+        time.sleep(sleep_time)
+        angle = mpu.get_angle()[0]
+        emergency_stop_check(angle)
 
 ###################### Testing
 #while True:
@@ -56,6 +63,7 @@ try:
    while(True):
         angle_info = mpu.get_angle()
         v = angle_info[0]
+        emergency_stop_check(v)
         control = int(pid(v))
         if v > setpoint:
             pt.move_front()
