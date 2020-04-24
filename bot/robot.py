@@ -34,8 +34,9 @@ mpu = mpu6050.mpu6050()
 
 pt.change_speed_all(0)
 
-def emergency_stop_check(angle, sleep_time=0.2):
-    if angle > 25 or angle < -20:
+def emergency_stop_check(angle, min_angle=-20, max_angle=23, sleep_time=0.2):
+    if angle > max_angle or angle < min_angle:
+        print('Angle: %f. Seems like I fell. Waiting for help.'%(angle))
         pt.break_motors()
         time.sleep(sleep_time)
         angle = mpu.get_angle()[0]
