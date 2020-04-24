@@ -57,14 +57,19 @@ class powertrain:
         self.p_b.ChangeDutyCycle(75)
 
     def change_speed_left(self, speed):
+        self.motor_speed_left = speed
         self.p_a.ChangeDutyCycle(speed)
 
     def change_speed_right(self, speed):
+        self.motor_speed_right = speed
         self.p_b.ChangeDutyCycle(speed)
 
     def change_speed_all(self, speed):
         self.change_speed_right(speed)
         self.change_speed_left(speed)
+
+    def get_speed_all(self):
+        return (self.motor_speed_left, self.motor_speed_right)
 
     def turn_left_wheel(self, forward=True):
         if forward:

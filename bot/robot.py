@@ -37,7 +37,10 @@ pt.change_speed_all(0)
 def emergency_stop_check(angle, min_angle=-20, max_angle=23):
     if angle > max_angle or angle < min_angle:
         print('Angle: %f. Seems like I fell. Waiting for help.'%(angle))
-        pt.break_motors()
+        speed = pt.get_speed_all()
+        if speed[0] > 0 or speed[1] > 0:
+            pt.change_speed_all(0)
+            pt.break_motors()
         angle = mpu.get_angle()[0]
         emergency_stop_check(angle)
 
