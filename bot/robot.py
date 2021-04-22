@@ -71,7 +71,7 @@ try:
         if v > setpoint:
             stepper.turn_stepper(1)
         else:
-            stepper.turn_stepper(1, false)
+            stepper.turn_stepper(1, False)
         control = abs(control)
         control = min_motor_speed if control < min_motor_speed else control
         # pt.change_speed_all(control)
