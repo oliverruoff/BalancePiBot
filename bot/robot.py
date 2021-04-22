@@ -74,7 +74,7 @@ try:
             stepper.turn_stepper(1, false)
         control = abs(control)
         control = min_motor_speed if control < min_motor_speed else control
-        pt.change_speed_all(control)
+        # pt.change_speed_all(control)
         print('V:', v, '| control:', control, '| Frequency:',
               angle_info[3], '| PID wights:', pid.components)
 
