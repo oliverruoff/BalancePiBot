@@ -9,7 +9,7 @@ from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-setpoint = -1.3
+setpoint = -86
 # required for motors to start turning (normally around 55)
 min_motor_speed = 40
 
@@ -69,14 +69,14 @@ try:
         #    continue
         control = int(pid(v))
         if v > setpoint:
-            stepper.turn_stepper(1)
+            stepper.turn_stepper(10)
         else:
-            stepper.turn_stepper(1, False)
+            stepper.turn_stepper(10, False)
         control = abs(control)
         control = min_motor_speed if control < min_motor_speed else control
         # pt.change_speed_all(control)
         print('V:', v, '| control:', control, '| Frequency:',
-              angle_info[3], '| PID wights:', pid.components)
+              angle_info[3], '| PID weights:', pid.components)
 
 except KeyboardInterrupt:
     print('Stopped!')
