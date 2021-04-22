@@ -34,7 +34,7 @@ def stability_switch_changed(channel):
 
 # Wait for the input to go low, run the function when it does
 GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
-                      callback=inputLow, bouncetime=200)
+                      callback=stability_switch_changed, bouncetime=200)
 
 
 def is_stuck(angle, min_angle=-20, max_angle=20):
