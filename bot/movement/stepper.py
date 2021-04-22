@@ -29,4 +29,4 @@ def turn_stepper(degree, clockwise=True):
         sleep(delay)
         GPIO.output(STEP, GPIO.LOW)
         sleep(delay)
-    GPIO.output(STEPPER_ACTIVATION_PIN, GPIO.LOW)
+    # GPIO.output(STEPPER_ACTIVATION_PIN, GPIO.LOW)
