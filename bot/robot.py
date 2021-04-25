@@ -50,7 +50,7 @@ old_time = time.time()
 try:
     while(True):
         angle_info = mpu.get_angle()
-        v = angle_info[0] - ANGLE_OFFSET
+        v = angle_info[0]
         control = int(pid(v))
         if v > setpoint:
             stepper.turn_stepper(10)
