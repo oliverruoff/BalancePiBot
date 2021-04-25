@@ -64,7 +64,9 @@ old_time = time.time()
 msmt = []
 for i in range(100):
     angle_info = mpu.get_angle()
-    msmt.append(angle_info[0])
+    angle = angle_info[0]
+    print('Angle:', angle)
+    msmt.append(angle)
 print('AVG: ', sum(msmt)/100)
 exit()
 
