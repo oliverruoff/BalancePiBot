@@ -17,6 +17,8 @@ Kp = 13
 Ki = 0
 Kd = 1.3
 
+ANGLE_OFFSET = -86.5
+
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 GPIO.setmode(GPIO.BCM)
@@ -50,7 +52,7 @@ old_time = time.time()
 try:
     while(True):
         angle_info = mpu.get_angle()
-        v = angle_info[0]
+        v = angle_info[0] - ANGLE_OFFSET
         control = int(pid(v))
         if v > setpoint:
             stepper.turn_stepper(10)
@@ -64,5 +66,3 @@ try:
 
 except KeyboardInterrupt:
     print('Stopped!')
-
-# mpu.get_accel_data()['z']
