@@ -25,6 +25,11 @@ GPIO.setmode(GPIO.BCM)
 STABILITY_SWITCH_PIN = 16
 GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 
+# Stepper activation pin
+STEPPER_ACTIVATOR_PIN = 24
+GPIO.setup(STEPPER_ACTIVATOR_PIN, GPIO.OUT)
+GPIO.output(STEPPER_ACTIVATOR_PIN, 0)
+
 # Complementary filter angle average (1000)
 ANGLE_OFFSET = -87.07159316982624
 
@@ -32,7 +37,8 @@ mpu = mpu6050.mpu6050()
 
 
 def stability_switch_changed(channel):
-    print(GIPO.input(STABILITY_SWITCH_PIN))
+    GPIO.output(STEPPER_ACTIVATOR_PIN, GPIO.input(STABILITY_SWITCH_PIN))
+    print(GPIO.input(STABILITY_SWITCH_PIN))
 
 
 # Wait for the input to go low, run the function when it does
