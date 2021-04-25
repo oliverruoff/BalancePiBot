@@ -65,7 +65,7 @@ msmt = []
 for i in range(100):
     angle_info = mpu.get_angle()
     msmt.append(angle_info[0])
-print('AVG: 'sum(msmt)/100)
+print('AVG: ', sum(msmt)/100)
 exit()
 
 try:
