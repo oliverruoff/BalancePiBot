@@ -62,12 +62,12 @@ pid = PID(Kp, Ki, Kd, setpoint=setpoint,
 old_time = time.time()
 
 msmt = []
-for i in range(100):
+for i in range(1000):
     angle_info = mpu.get_angle()
     angle = angle_info[0]
     print('Angle:', angle)
     msmt.append(angle)
-print('AVG: ', sum(msmt)/100)
+print('AVG: ', sum(msmt)/1000)
 exit()
 
 try:
