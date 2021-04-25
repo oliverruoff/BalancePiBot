@@ -61,6 +61,10 @@ pid = PID(Kp, Ki, Kd, setpoint=setpoint,
           sample_time=0.008, output_limits=(-100, 100))
 old_time = time.time()
 
+for _ in range(5000):
+    print('Initializing...', _)
+    mpu.get_angle()
+
 msmt = []
 for i in range(1000):
     angle_info = mpu.get_angle()
