@@ -9,7 +9,7 @@ from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-setpoint = -86
+setpoint = 0
 # required for motors to start turning (normally around 55)
 min_motor_speed = 40
 
@@ -29,9 +29,6 @@ GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 STEPPER_ACTIVATOR_PIN = 24
 GPIO.setup(STEPPER_ACTIVATOR_PIN, GPIO.OUT)
 GPIO.output(STEPPER_ACTIVATOR_PIN, 0)
-
-# Complementary filter angle average (1000)
-ANGLE_OFFSET = -87.07159316982624
 
 mpu = mpu6050.mpu6050()
 
