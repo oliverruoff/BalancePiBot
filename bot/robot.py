@@ -76,5 +76,5 @@ if __name__ == '__main__':
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
 
-        except KeyboardInterrupt:
-            print('Stopped!')
+    except KeyboardInterrupt:
+        print('Stopped!')
