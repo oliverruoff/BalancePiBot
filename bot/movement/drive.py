@@ -25,8 +25,10 @@ class drive:
         self.activator_pin = activator_pin
         self.steps_per_revolution = steps_per_revolution
         self.delay = delay
-        GPIO.setup(direction_pin, GPIO.OUT)
-        GPIO.setup(step_pin, GPIO.OUT)
+        GPIO.setup(left_direction_pin, GPIO.OUT)
+        GPIO.setup(left_step_pin, GPIO.OUT)
+        GPIO.setup(right_direction_pin, GPIO.OUT)
+        GPIO.setup(right_step_pin, GPIO.OUT)
 
     def activate_stepper(self):
         GPIO.output(self.activator_pin, GPIO.HIGH)
