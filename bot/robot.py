@@ -4,7 +4,7 @@ import math
 import RPi.GPIO as GPIO
 from simple_pid import PID
 
-from movement import drive
+from movement import drive as _drive
 from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
@@ -45,13 +45,14 @@ if __name__ == '__main__':
     GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
                           callback=stability_switch_changed, bouncetime=200)
 
-    drive = drive(left_direction_pin=12,
-                  left_step_pin=25,
-                  right_direction_pin=21,
-                  right_step_pin=20,
-                  activator_pin=4,
-                  steps_per_revolution=200,
-                  delay=.0005)
+    drive = _drive.drive(
+        left_direction_pin=12,
+        left_step_pin=25,
+        right_direction_pin=21,
+        right_step_pin=20,
+        activator_pin=STEPPER_ACTIVATOR_PIN,
+        steps_per_revolution=200,
+        delay=.0005)
 
     drive.activate_stepper()
 
