@@ -4,7 +4,7 @@ import math
 import RPi.GPIO as GPIO
 from simple_pid import PID
 
-from movement import drive
+from movement import drive.drive
 from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
