@@ -45,7 +45,7 @@ if __name__ == '__main__':
     GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
                           callback=stability_switch_changed, bouncetime=200)
 
-    drive = drive.drive(
+    d = drive.drive(
         left_direction_pin=12,
         left_step_pin=25,
         right_direction_pin=21,
@@ -54,9 +54,9 @@ if __name__ == '__main__':
         steps_per_revolution=200,
         delay=.0005)
 
-    drive.activate_stepper()
+    d.activate_stepper()
 
-    drive.turn_stepper(self, 1000, clockwise=True)
+    d.turn_stepper(self, 1000, clockwise=True)
 
     pid = PID(Kp, Ki, Kd, setpoint=setpoint,
               sample_time=0.008, output_limits=(-100, 100))
