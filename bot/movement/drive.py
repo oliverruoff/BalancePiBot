@@ -11,9 +11,9 @@ CCW = 0    # Counterclockwise Rotation
 def __init__(self,
              left_direction_pin,
              left_step_pin,
-             activator_pin,
              right_direction_pin,
-             right_step_spin,
+             right_step_pin,
+             activator_pin,
              steps_per_revolution=200,
              delay=.0005):
     self.left_direction_pin = left_direction_pin

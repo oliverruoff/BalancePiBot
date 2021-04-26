@@ -45,13 +45,13 @@ if __name__ == '__main__':
     GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
                           callback=stability_switch_changed, bouncetime=200)
 
-    drive = drive.drive(12,
-                        25,
-                        21,
-                        20,
-                        4,
-                        steps_per_revolution=200,
-                        delay=.0005)
+    drive = drive(left_direction_pin=12,
+                  left_step_pin=25,
+                  right_direction_pin=21,
+                  right_step_pin=20,
+                  activator_pin=4,
+                  steps_per_revolution=200,
+                  delay=.0005)
 
     drive.activate_stepper()
 
