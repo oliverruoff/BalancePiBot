@@ -68,9 +68,9 @@ if __name__ == '__main__':
             v = angle_info[0] - ANGLE_OFFSET
             control = int(pid(v))
             if v > setpoint:
-                drive.turn_stepper(10)
+                drive.turn_both_steppers()
             else:
-                drive.turn_stepper(10, False)
+                drive.turn_both_steppers(False)
             control = abs(control)
             control = min_motor_speed if control < min_motor_speed else control
             # pt.change_speed_all(control)

@@ -2,25 +2,25 @@
         Read Gyro and Accelerometer by Interfacing Raspberry Pi with MPU6050 using Python
         http://www.electronicwings.com
 '''
-import smbus                    #import SMBus module of I2C
-from time import sleep          #import
+import smbus  # import SMBus module of I2C
+from time import sleep  # import
 import time
 import math
 
-#some MPU6050 Registers and their Address
-PWR_MGMT_1   = 0x6B
-SMPLRT_DIV   = 0x19
-CONFIG       = 0x1A
-GYRO_CONFIG  = 0x1B
-INT_ENABLE   = 0x38
+# some MPU6050 Registers and their Address
+PWR_MGMT_1 = 0x6B
+SMPLRT_DIV = 0x19
+CONFIG = 0x1A
+GYRO_CONFIG = 0x1B
+INT_ENABLE = 0x38
 ACCEL_XOUT_H = 0x3B
 ACCEL_YOUT_H = 0x3D
 ACCEL_ZOUT_H = 0x3F
-GYRO_XOUT_H  = 0x43
-GYRO_YOUT_H  = 0x45
-GYRO_ZOUT_H  = 0x47
+GYRO_XOUT_H = 0x43
+GYRO_YOUT_H = 0x45
+GYRO_ZOUT_H = 0x47
 
-#Full scale range +/- 250 degree/C as per sensitivity scale factor
+# Full scale range +/- 250 degree/C as per sensitivity scale factor
 MPU_SENSOR_GYRO_CONSTANT = 131.0
 MPU_SENSOR_ACCEL_CONSTANT = 16384.0
 
@@ -30,13 +30,14 @@ Device_Address = 0x68   # MPU6050 device address
 # weight for the gyro angle for complementary filter 1-GYRO_WEIGHT is accel weight
 GYRO_WEIGHT = 0.99
 
+
 class mpu6050:
 
     def __init__(self):
 
         self.MPU_Init()
-        self.gyro_drift = 0.4818320610687028 # self.get_gyro_drift()
-        self.accel_avg = 2.921613326614945 # self.get_accel_error()
+        self.gyro_drift = self.get_gyro_drift()
+        self.accel_avg = self.get_accel_error()
         print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
         self.gyro_angle = 0
         self.complementary_filter_angle = 0
@@ -44,35 +45,35 @@ class mpu6050:
         self.last_time = time.time()
 
     def MPU_Init(self):
-            #write to sample rate register
-            bus.write_byte_data(Device_Address, SMPLRT_DIV, 7)
+        # write to sample rate register
+        bus.write_byte_data(Device_Address, SMPLRT_DIV, 7)
 
-            #Write to power management register
-            bus.write_byte_data(Device_Address, PWR_MGMT_1, 1)
+        # Write to power management register
+        bus.write_byte_data(Device_Address, PWR_MGMT_1, 1)
 
-            #Write to Configuration register
-            bus.write_byte_data(Device_Address, CONFIG, 0)
+        # Write to Configuration register
+        bus.write_byte_data(Device_Address, CONFIG, 0)
 
-            #Write to Gyro configuration register
-            bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
+        # Write to Gyro configuration register
+        bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
 
-            #Write to interrupt enable register
-            bus.write_byte_data(Device_Address, INT_ENABLE, 1)
+        # Write to interrupt enable register
+        bus.write_byte_data(Device_Address, INT_ENABLE, 1)
 
     def read_raw_data(self, addr):
-            #Accelero and Gyro value are 16-bit
-            high = bus.read_byte_data(Device_Address, addr)
-            low = bus.read_byte_data(Device_Address, addr+1)
+        # Accelero and Gyro value are 16-bit
+        high = bus.read_byte_data(Device_Address, addr)
+        low = bus.read_byte_data(Device_Address, addr+1)
 
-            #concatenate higher and lower value
-            value = ((high << 8) | low)
+        # concatenate higher and lower value
+        value = ((high << 8) | low)
 
-            #to get signed value from mpu6050
-            if(value > 32768):
-                    value = value - 65536
-            return value
+        # to get signed value from mpu6050
+        if(value > 32768):
+            value = value - 65536
+        return value
 
-    def get_new_gyro_angle(self, axis, time_diff_s, old_angle=0, gyro_drift = 0.4827480916030538, raw=False):
+    def get_new_gyro_angle(self, axis, time_diff_s, old_angle=0, gyro_drift=0.4827480916030538, raw=False):
         DEGREE_SCALE_CONSTANT = 8
         if axis == 'x':
             raw = self.read_raw_data(GYRO_XOUT_H)
@@ -106,7 +107,7 @@ class mpu6050:
         x = self.read_raw_data(ACCEL_XOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
         y = self.read_raw_data(ACCEL_YOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
         z = self.read_raw_data(ACCEL_ZOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
-        return (x,y,z)
+        return (x, y, z)
 
     def dotproduct(self, v1, v2):
         return sum((a*b) for a, b in zip(v1, v2))
@@ -118,7 +119,7 @@ class mpu6050:
         return math.acos(self.dotproduct(v1, v2) / (self.length(v1) * self.length(v2)))
 
     def get_accel_error(self, samples=100):
-        return sum([math.degrees(self.angle(self.get_full_accel_data(), (1,0,0))) for i in range(samples)])/samples
+        return sum([math.degrees(self.angle(self.get_full_accel_data(), (1, 0, 0))) for i in range(samples)])/samples
 
     def get_gyro_drift(self, samples=100):
         return sum([self.read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(samples)])/samples
@@ -136,14 +137,17 @@ class mpu6050:
         time_diff = curr_time - self.last_time
         self.last_time = curr_time
 
-        gyro_raw = self.get_new_gyro_angle('y', time_diff, 0, self.gyro_drift, True)
+        gyro_raw = self.get_new_gyro_angle(
+            'y', time_diff, 0, self.gyro_drift, True)
         accel_raw = self.get_full_accel_data()
         accel_dir = 1 if accel_raw[2] > 0 else -1
 
         self.gyro_angle = self.gyro_angle + gyro_raw * time_diff
-        self.accel_angle = (math.degrees(self.angle(accel_raw, (1,0,0))) - self.accel_avg) * accel_dir
+        self.accel_angle = (math.degrees(self.angle(
+            accel_raw, (1, 0, 0))) - self.accel_avg) * accel_dir
 
-        self.complementary_filter_angle = (GYRO_WEIGHT * (self.complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*self.accel_angle)
+        self.complementary_filter_angle = (
+            GYRO_WEIGHT * (self.complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*self.accel_angle)
 
         freq = 1 / time_diff
         return (self.complementary_filter_angle, self.gyro_angle, self.accel_angle, freq)
