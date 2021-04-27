@@ -26,6 +26,11 @@ class drive:
         self.activator_pin = activator_pin
         self.pi = pi = pigpio.pi()
 
+        GPIO.setup(left_direction_pin, GPIO.OUT)
+        GPIO.setup(left_step_pin, GPIO.OUT)
+        GPIO.setup(right_direction_pin, GPIO.OUT)
+        GPIO.setup(right_step_pin, GPIO.OUT)
+
         pi.set_mode(left_direction_pin, pigpio.OUTPUT)
         pi.set_mode(left_step_pin, pigpio.OUTPUT)
         pi.set_mode(right_direction_pin, pigpio.OUTPUT)
