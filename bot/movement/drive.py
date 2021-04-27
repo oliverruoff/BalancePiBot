@@ -45,9 +45,12 @@ class drive:
             direction = CW
         GPIO.output(self.left_direction_pin, direction)
         GPIO.output(self.right_direction_pin, direction)
-        self.pi.set_PWM_dutycycle(STEP, 128)  # PWM 1/2 On 1/2 Off
+        self.pi.set_PWM_dutycycle(
+            self.left_step_pin, 128)  # PWM 1/2 On 1/2 Off
+        self.pi.set_PWM_dutycycle(self.right_step_pin, 128)
         # 320 / 400 / 500 / 800 / 1000 -> frequency
-        self.pi.set_PWM_frequency(STEP, frequency)
+        self.pi.set_PWM_frequency(self.left_step_pin, frequency)
+        self.pi.set_PWM_frequency(self.right_step_pin, frequency)
 
     def turn_stepper_degree(self, degree, clockwise=True):
         direction = CCW
