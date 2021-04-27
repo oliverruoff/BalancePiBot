@@ -42,8 +42,8 @@ def stability_switch_changed(channel):
 
 if __name__ == '__main__':
     # Wait for the input to go low, run the function when it does
-    GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
-                          callback=stability_switch_changed, bouncetime=200)
+    # GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
+    #                     callback=stability_switch_changed, bouncetime=200)
 
     drive = drive.drive(
         left_direction_pin=12,
@@ -68,9 +68,9 @@ if __name__ == '__main__':
             v = angle_info[0] - ANGLE_OFFSET
             control = int(pid(v))
             if v > setpoint:
-                stepper.turn_stepper(10)
+                drive.turn_stepper(10)
             else:
-                stepper.turn_stepper(10, False)
+                drive.turn_stepper(10, False)
             control = abs(control)
             control = min_motor_speed if control < min_motor_speed else control
             # pt.change_speed_all(control)
