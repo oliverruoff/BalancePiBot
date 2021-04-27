@@ -56,10 +56,8 @@ if __name__ == '__main__':
 
     drive.activate_stepper()
 
-    drive.turn_stepper(1000, clockwise=True)
-
     pid = PID(Kp, Ki, Kd, setpoint=setpoint,
-              sample_time=0.008, output_limits=(-100, 100))
+              sample_time=0.016, output_limits=(-100, 100))
     old_time = time.time()
 
     try:
