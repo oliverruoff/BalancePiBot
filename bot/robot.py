@@ -57,7 +57,7 @@ if __name__ == '__main__':
     drive.activate_stepper()
 
     pid = PID(Kp, Ki, Kd, setpoint=setpoint,
-              sample_time=0.016, output_limits=(-100, 100))
+              sample_time=0.016, output_limits=(0, 1000))
     old_time = time.time()
 
     # cycle used for activation switch checks
