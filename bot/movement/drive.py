@@ -43,6 +43,8 @@ class drive:
             return
         self.stepper_activated = True
         GPIO.output(self.activator_pin, GPIO.HIGH)
+        self.pi.set_PWM_dutycycle(self.left_step_pin, 128)
+        self.pi.set_PWM_dutycycle(self.right_step_pin, 128)
 
     def deactivate_stepper(self):
         if self.stepper_activated:
