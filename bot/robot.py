@@ -69,6 +69,7 @@ if __name__ == '__main__':
                     drive.deactivate_stepper()
                     while GPIO.input(STABILITY_SWITCH_PIN) == 0:
                         time.sleep(0.1)
+                    drive.activate_stepper()
             cycle += 1
 
             angle_info = mpu.get_angle()
