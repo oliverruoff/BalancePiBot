@@ -66,7 +66,7 @@ if __name__ == '__main__':
             if cycle % 100 == 0:
                 cycle = 0
                 if GPIO.input(STABILITY_SWITCH_PIN) == 0:
-                    drive.turn_both_steppers(0)
+                    drive.deactivate_stepper()
                     while GPIO.input(STABILITY_SWITCH_PIN) == 0:
                         time.sleep(0.1)
             cycle += 1

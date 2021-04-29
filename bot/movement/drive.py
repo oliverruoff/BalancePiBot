@@ -39,6 +39,11 @@ class drive:
     def activate_stepper(self):
         GPIO.output(self.activator_pin, GPIO.HIGH)
 
+    def deactivate_stepper(self):
+        GPIO.output(self.activator_pin, GPIO.LOW)
+        self.pi.set_PWM_dutycycle(self.left_step_pin, 0)
+        self.pi.set_PWM_dutycycle(self.right_step_pin, 0)
+
     def turn_both_steppers(self, frequency=1000, clockwise=True):
         direction = CCW
         if clockwise:
