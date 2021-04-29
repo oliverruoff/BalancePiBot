@@ -60,6 +60,9 @@ if __name__ == '__main__':
               sample_time=0.016, output_limits=(0, 1000))
     old_time = time.time()
 
+    # init & and start steppers
+    drive.turn_both_steppers()
+
     # cycle used for activation switch checks
     cycle = 0
     try:
@@ -71,6 +74,8 @@ if __name__ == '__main__':
             control = min_motor_speed if control < min_motor_speed else control
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
+
+            # switch activated code
             if cycle % 100 == 0:
                 cycle = 0
                 if GPIO.input(STABILITY_SWITCH_PIN) == 0:
@@ -79,13 +84,12 @@ if __name__ == '__main__':
                     continue
                 drive.activate_stepper()
             cycle += 1
-            print('V:', v, '| control:', control, '| Frequency:',
-                  angle_info[3], '| PID weights:', pid.components)
+            # switch activated code
+
             if v > setpoint:
-                drive.turn_both_steppers()
+                drive.set_stepper_rotation_clockwise(True)
             else:
-                print('Driving backward!')
-                drive.turn_both_steppers(False)
+                drive.set_stepper_rotation_clockwise(False)
 
             # drive.change_speed_all(control)
 

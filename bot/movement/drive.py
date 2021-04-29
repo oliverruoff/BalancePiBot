@@ -25,6 +25,8 @@ class drive:
         self.right_step_pin = right_step_pin
         self.activator_pin = activator_pin
         self.pi = pi = pigpio.pi()
+        self.stepper_rotation_clockwise = True
+        self.stepper_activated = False
 
         GPIO.setup(left_direction_pin, GPIO.OUT)
         GPIO.setup(left_step_pin, GPIO.OUT)
@@ -37,23 +39,35 @@ class drive:
         pi.set_mode(right_step_pin, pigpio.OUTPUT)
 
     def activate_stepper(self):
+        if self.stepper_activated:
+            return
+        self.stepper_activated = True
         GPIO.output(self.activator_pin, GPIO.HIGH)
 
     def deactivate_stepper(self):
-        GPIO.output(self.activator_pin, GPIO.LOW)
-        self.pi.set_PWM_dutycycle(self.left_step_pin, 0)
-        self.pi.set_PWM_dutycycle(self.right_step_pin, 0)
+        if self.stepper_activated:
+            self.stepper_activated = False
+            GPIO.output(self.activator_pin, GPIO.LOW)
+            self.pi.set_PWM_dutycycle(self.left_step_pin, 0)
+            self.pi.set_PWM_dutycycle(self.right_step_pin, 0)
 
     def change_speed_all(self, frequency):
         self.pi.set_PWM_frequency(self.left_step_pin, frequency)
         self.pi.set_PWM_frequency(self.right_step_pin, frequency)
 
-    def turn_both_steppers(self, frequency=1000, clockwise=True):
-        direction = CCW
+    def set_stepper_rotation_clockwise(clockwise):
+        if self.stepper_rotation_clockwise == clockwise:
+            return
+        self.stepper_rotation_clockwise = clockwise
         if clockwise:
-            direction = CW
-        GPIO.output(self.left_direction_pin, direction)
-        GPIO.output(self.right_direction_pin, direction)
+            GPIO.output(self.left_direction_pin, CW)
+            GPIO.output(self.right_direction_pin, CW)
+        else:
+            GPIO.output(self.left_direction_pin, CCW)
+            GPIO.output(self.right_direction_pin, CCW)
+
+    def turn_both_steppers(self, frequency=1000, clockwise=True):
+        self.set_stepper_rotation_clockwise(clockwise)
         self.pi.set_PWM_dutycycle(
             self.left_step_pin, 128)  # PWM 1/2 On 1/2 Off
         self.pi.set_PWM_dutycycle(self.right_step_pin, 128)
