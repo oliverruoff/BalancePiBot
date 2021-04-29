@@ -13,9 +13,9 @@ setpoint = 0
 # required for motors to start turning (normally around 55)
 min_motor_speed = 40
 
-Kp = 13
+Kp = 1
 Ki = 0
-Kd = 1.3
+Kd = 0
 
 ANGLE_OFFSET = 0
 

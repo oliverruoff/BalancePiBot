@@ -4,6 +4,8 @@ import pigpio
 
 GPIO.setmode(GPIO.BCM)
 
+STEPPER_DUTY_CYCLE = 64
+
 CW = 1     # Clockwise Rotation
 CCW = 0    # Counterclockwise Rotation
 # Steps per Revolution (360 / 1.8) (1,8° per step (oruoff))
@@ -43,8 +45,8 @@ class drive:
             return
         self.stepper_activated = True
         GPIO.output(self.activator_pin, GPIO.HIGH)
-        self.pi.set_PWM_dutycycle(self.left_step_pin, 128)
-        self.pi.set_PWM_dutycycle(self.right_step_pin, 128)
+        self.pi.set_PWM_dutycycle(self.left_step_pin, STEPPER_DUTY_CYCLE)
+        self.pi.set_PWM_dutycycle(self.right_step_pin, STEPPER_DUTY_CYCLE)
 
     def deactivate_stepper(self):
         if self.stepper_activated:
@@ -71,8 +73,8 @@ class drive:
     def turn_both_steppers(self, frequency=1000, clockwise=True):
         self.set_stepper_rotation_clockwise(clockwise)
         self.pi.set_PWM_dutycycle(
-            self.left_step_pin, 128)  # PWM 1/2 On 1/2 Off
-        self.pi.set_PWM_dutycycle(self.right_step_pin, 128)
+            self.left_step_pin, STEPPER_DUTY_CYCLE)  # PWM 1/2 On 1/2 Off
+        self.pi.set_PWM_dutycycle(self.right_step_pin, STEPPER_DUTY_CYCLE)
         # 320 / 400 / 500 / 800 / 1000 -> frequency
         self.pi.set_PWM_frequency(self.left_step_pin, frequency)
         self.pi.set_PWM_frequency(self.right_step_pin, frequency)
