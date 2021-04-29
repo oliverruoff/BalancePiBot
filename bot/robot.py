@@ -86,7 +86,7 @@ if __name__ == '__main__':
             else:
                 drive.turn_both_steppers(False)
 
-            drive.change_speed_all(control)
+            # drive.change_speed_all(control)
 
     except KeyboardInterrupt:
         print('Stopped!')
