@@ -44,6 +44,9 @@ class drive:
         self.pi.set_PWM_dutycycle(self.left_step_pin, 0)
         self.pi.set_PWM_dutycycle(self.right_step_pin, 0)
 
+    def change_speed_all(self, duty_cycle):
+        self.pi.ChangeDutyCycle(duty_cycle)
+
     def turn_both_steppers(self, frequency=1000, clockwise=True):
         direction = CCW
         if clockwise:
