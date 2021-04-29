@@ -55,7 +55,7 @@ class drive:
         self.pi.set_PWM_frequency(self.left_step_pin, frequency)
         self.pi.set_PWM_frequency(self.right_step_pin, frequency)
 
-    def set_stepper_rotation_clockwise(clockwise):
+    def set_stepper_rotation_clockwise(self, clockwise):
         if self.stepper_rotation_clockwise == clockwise:
             return
         self.stepper_rotation_clockwise = clockwise
