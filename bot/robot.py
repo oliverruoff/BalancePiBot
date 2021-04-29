@@ -17,7 +17,7 @@ Kp = 13
 Ki = 0
 Kd = 1.3
 
-ANGLE_OFFSET = -86.5
+ANGLE_OFFSET = 0
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
@@ -60,30 +60,33 @@ if __name__ == '__main__':
               sample_time=0.016, output_limits=(-100, 100))
     old_time = time.time()
 
+    # cycle used for activation switch checks
     cycle = 0
     try:
         while(True):
+            angle_info = mpu.get_angle()
+            v = angle_info[0] - ANGLE_OFFSET
+            control = int(pid(v))
+            control = abs(control)
+            control = min_motor_speed if control < min_motor_speed else control
+            print('V:', v, '| control:', control, '| Frequency:',
+                  angle_info[3], '| PID weights:', pid.components)
             if cycle % 100 == 0:
                 cycle = 0
                 if GPIO.input(STABILITY_SWITCH_PIN) == 0:
                     drive.deactivate_stepper()
-                    while GPIO.input(STABILITY_SWITCH_PIN) == 0:
-                        time.sleep(0.1)
-                    drive.activate_stepper()
+                    time.sleep(0.2)
+                    continue
+                drive.activate_stepper()
             cycle += 1
-
-            angle_info = mpu.get_angle()
-            v = angle_info[0] - ANGLE_OFFSET
-            control = int(pid(v))
+            print('V:', v, '| control:', control, '| Frequency:',
+                  angle_info[3], '| PID weights:', pid.components)
             if v > setpoint:
                 drive.turn_both_steppers()
             else:
                 drive.turn_both_steppers(False)
-            control = abs(control)
-            control = min_motor_speed if control < min_motor_speed else control
+
             drive.change_speed_all(control)
-            print('V:', v, '| control:', control, '| Frequency:',
-                  angle_info[3], '| PID weights:', pid.components)
 
     except KeyboardInterrupt:
         print('Stopped!')
