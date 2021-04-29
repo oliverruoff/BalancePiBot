@@ -81,7 +81,7 @@ if __name__ == '__main__':
                 drive.turn_both_steppers(False)
             control = abs(control)
             control = min_motor_speed if control < min_motor_speed else control
-            drive.change_speed_all(control)
+            # drive.change_speed_all(control)
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
 
