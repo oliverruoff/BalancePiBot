@@ -25,7 +25,7 @@ class drive:
         self.right_step_pin = right_step_pin
         self.activator_pin = activator_pin
         self.pi = pi = pigpio.pi()
-        self.stepper_rotation_clockwise = True
+        self.stepper_rotation_clockwise = None
         self.stepper_activated = False
 
         GPIO.setup(left_direction_pin, GPIO.OUT)
