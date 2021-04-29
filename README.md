@@ -8,3 +8,9 @@ Accelerometer: Any kind of linear acceleration, including the orientation of the
 Gyroscope: any rotation, unaffected by acceleration.
 
 Magnetometer: orientation and direction by determining the direction of Earth's magnetic field. Can be interfered by the environment, doesn't work everywhere on Earth, potentially useless in a couple of decades due to pole switching.
+
+## Preconditions
+
+- pigpiod service has to be activated 
+- `sudo systemctl enable pigpiod`
+- `sudo systemctl start pigpiod`

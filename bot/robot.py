@@ -60,8 +60,16 @@ if __name__ == '__main__':
               sample_time=0.016, output_limits=(-100, 100))
     old_time = time.time()
 
+    cycle = 0
     try:
         while(True):
+            if cycle % 100 == 0:
+                cycle = 0
+                if GPIO.input(STABILITY_SWITCH_PIN):
+                    while GPIO.input(STABILITY_SWITCH_PIN):
+                        time.sleep(0.1)
+            cycle += 1
+
             angle_info = mpu.get_angle()
             v = angle_info[0] - ANGLE_OFFSET
             control = int(pid(v))
