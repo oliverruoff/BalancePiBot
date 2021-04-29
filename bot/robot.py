@@ -84,6 +84,7 @@ if __name__ == '__main__':
             if v > setpoint:
                 drive.turn_both_steppers()
             else:
+                print('Driving backward!')
                 drive.turn_both_steppers(False)
 
             # drive.change_speed_all(control)
