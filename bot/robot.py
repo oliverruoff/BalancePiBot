@@ -65,8 +65,9 @@ if __name__ == '__main__':
         while(True):
             if cycle % 100 == 0:
                 cycle = 0
-                if GPIO.input(STABILITY_SWITCH_PIN):
-                    while GPIO.input(STABILITY_SWITCH_PIN):
+                if GPIO.input(STABILITY_SWITCH_PIN) == 0:
+                    drive.turn_both_steppers(0)
+                    while GPIO.input(STABILITY_SWITCH_PIN) == 0:
                         time.sleep(0.1)
             cycle += 1
 
