@@ -9,9 +9,7 @@ from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-setpoint = 0
-# required for motors to start turning (normally around 55)
-min_motor_speed = 40
+setpoint = 7
 
 Kp = 1
 Ki = 0
@@ -55,8 +53,7 @@ if __name__ == '__main__':
 
     drive.activate_stepper()
 
-    pid = PID(Kp, Ki, Kd, setpoint=setpoint,
-              sample_time=0.016, output_limits=(0, 1000))
+    pid = PID(Kp, Ki, Kd, setpoint=setpoint, output_limits=(0, 100))
     old_time = time.time()
 
     # init & and start steppers
@@ -70,7 +67,6 @@ if __name__ == '__main__':
             v = angle_info[0] - ANGLE_OFFSET
             control = int(pid(v))
             control = abs(control)
-            control = min_motor_speed if control < min_motor_speed else control
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
 
