@@ -6,7 +6,7 @@ STEP = 25  # Step GPIO Pin
 CW = 1     # Clockwise Rotation
 CCW = 0    # Counterclockwise Rotation
 SPR = 200   # Steps per Revolution (360 / 1.8) (1,8° per step (oruoff))
-STEPPER_ACTIVATION_PIN = 4  # If set to Low, there is no holding torque on the motor
+STEPPER_ACTIVATION_PIN = 24  # If set to Low, there is no holding torque on the motor
 
 
 GPIO.setmode(GPIO.BCM)
@@ -16,6 +16,10 @@ GPIO.setup(STEP, GPIO.OUT)
 
 GPIO.output(DIR, CW)
 delay = .0005
+
+
+def activate_stepper():
+    GPIO.output(STEPPER_ACTIVATION_PIN, GPIO.HIGH)
 
 
 def turn_stepper(degree, clockwise=True):
