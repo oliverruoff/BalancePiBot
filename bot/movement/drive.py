@@ -30,6 +30,7 @@ class drive:
         self.stepper_rotation_clockwise = None
         self.stepper_activated = False
         self.steps_per_revolution = steps_per_revolution
+        self.delay = delay
 
         GPIO.setup(left_direction_pin, GPIO.OUT)
         GPIO.setup(left_step_pin, GPIO.OUT)
