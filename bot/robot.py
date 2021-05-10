@@ -55,8 +55,7 @@ if __name__ == '__main__':
 
     drive.activate_stepper()
 
-    pid = PID(Kp, Ki, Kd, setpoint=setpoint,
-              sample_time=0.016, output_limits=(0, 100))
+    pid = PID(Kp, Ki, Kd, setpoint=setpoint)
     old_time = time.time()
 
     # init & and start steppers
