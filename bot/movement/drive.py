@@ -40,11 +40,14 @@ class drive:
         pi.set_mode(right_direction_pin, pigpio.OUTPUT)
         pi.set_mode(right_step_pin, pigpio.OUTPUT)
 
-    def activate_stepper(self):
+    def activate_stepper_pin(self):
         if self.stepper_activated:
             return
         self.stepper_activated = True
         GPIO.output(self.activator_pin, GPIO.HIGH)
+
+    def activate_stepper(self):
+        self.activate_stepper_pin()
         self.pi.set_PWM_dutycycle(self.left_step_pin, STEPPER_DUTY_CYCLE)
         self.pi.set_PWM_dutycycle(self.right_step_pin, STEPPER_DUTY_CYCLE)
 

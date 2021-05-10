@@ -51,13 +51,10 @@ if __name__ == '__main__':
         activator_pin=STEPPER_ACTIVATOR_PIN,
         steps_per_revolution=200)
 
-    drive.activate_stepper()
+    drive.activate_stepper_pin()
 
     pid = PID(Kp, Ki, Kd, setpoint=setpoint)
     old_time = time.time()
-
-    # init & and start steppers
-    drive.turn_both_steppers()
 
     # cycle used for activation switch checks
     cycle = 0
@@ -75,16 +72,13 @@ if __name__ == '__main__':
                     drive.deactivate_stepper()
                     time.sleep(0.2)
                     continue
-                drive.activate_stepper()
+                drive.activate_stepper_pin()
             cycle += 1
             # switch activated code
-
             if v > setpoint:
                 drive.turn_stepper_degree(control)
-                # drive.set_stepper_rotation_clockwise(True)
             else:
                 drive.turn_stepper_degree(control, False)
-                # drive.set_stepper_rotation_clockwise(False)
 
             # drive.change_speed_all(control)
 
