@@ -9,7 +9,7 @@ from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-setpoint = 0
+setpoint = 8
 
 Kp = 1
 Ki = 0
