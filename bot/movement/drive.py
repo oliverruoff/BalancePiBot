@@ -81,7 +81,7 @@ class drive:
         self.pi.set_PWM_frequency(self.left_step_pin, frequency)
         self.pi.set_PWM_frequency(self.right_step_pin, frequency)
 
-    def turn_stepper_degree(self, degree, clockwise=True):
+    def turn_stepper_degree(self, degree, clockwise=True, delay=self.delay):
         direction = CCW
         if clockwise:
             direction = CW
@@ -90,7 +90,7 @@ class drive:
         for _ in range(int(self.steps_per_revolution/360*degree)):
             GPIO.output(self.left_step_pin, GPIO.HIGH)
             GPIO.output(self.right_step_pin, GPIO.HIGH)
-            sleep(self.delay)
+            sleep(delay)
             GPIO.output(self.left_step_pin, GPIO.LOW)
             GPIO.output(self.right_step_pin, GPIO.LOW)
-            sleep(self.delay)
+            sleep(delay)

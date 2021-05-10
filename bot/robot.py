@@ -57,7 +57,7 @@ if __name__ == '__main__':
     drive.activate_stepper()
 
     pid = PID(Kp, Ki, Kd, setpoint=setpoint,
-              sample_time=0.016, output_limits=(0, 1000))
+              sample_time=0.016, output_limits=(0, 100))
     old_time = time.time()
 
     # init & and start steppers
@@ -87,9 +87,11 @@ if __name__ == '__main__':
             # switch activated code
 
             if v > setpoint:
-                drive.set_stepper_rotation_clockwise(True)
+                drive.turn_stepper_degree(control)
+                # drive.set_stepper_rotation_clockwise(True)
             else:
-                drive.set_stepper_rotation_clockwise(False)
+                drive.turn_stepper_degree(control, False)
+                # drive.set_stepper_rotation_clockwise(False)
 
             # drive.change_speed_all(control)
 
