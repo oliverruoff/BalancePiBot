@@ -76,9 +76,9 @@ if __name__ == '__main__':
             cycle += 1
             # switch activated code
             if v > setpoint:
-                drive.turn_stepper_degree(control)
+                drive.turn_stepper_degree(abs(control))
             else:
-                drive.turn_stepper_degree(control, False)
+                drive.turn_stepper_degree(abs(control), False)
 
             # drive.change_speed_all(control)
 
