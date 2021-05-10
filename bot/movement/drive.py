@@ -19,8 +19,7 @@ class drive:
                  right_direction_pin,
                  right_step_pin,
                  activator_pin,
-                 steps_per_revolution=200,
-                 delay=.0005):
+                 steps_per_revolution=200):
         self.left_direction_pin = left_direction_pin
         self.left_step_pin = left_step_pin
         self.right_direction_pin = right_direction_pin
@@ -30,7 +29,6 @@ class drive:
         self.stepper_rotation_clockwise = None
         self.stepper_activated = False
         self.steps_per_revolution = steps_per_revolution
-        self.delay = delay
 
         GPIO.setup(left_direction_pin, GPIO.OUT)
         GPIO.setup(left_step_pin, GPIO.OUT)
@@ -81,7 +79,7 @@ class drive:
         self.pi.set_PWM_frequency(self.left_step_pin, frequency)
         self.pi.set_PWM_frequency(self.right_step_pin, frequency)
 
-    def turn_stepper_degree(self, degree, clockwise=True, delay=self.delay):
+    def turn_stepper_degree(self, degree, clockwise=True, delay=.0005):
         direction = CCW
         if clockwise:
             direction = CW
