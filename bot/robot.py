@@ -51,8 +51,7 @@ if __name__ == '__main__':
         right_direction_pin=21,
         right_step_pin=20,
         activator_pin=STEPPER_ACTIVATOR_PIN,
-        steps_per_revolution=200,
-        delay=.0005)
+        steps_per_revolution=200)
 
     drive.activate_stepper()
 
