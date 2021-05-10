@@ -9,7 +9,9 @@ from sensing import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-setpoint = 8
+setpoint = 0
+# required for motors to start turning (normally around 55)
+min_motor_speed = 40
 
 Kp = 1
 Ki = 0
@@ -49,12 +51,17 @@ if __name__ == '__main__':
         right_direction_pin=21,
         right_step_pin=20,
         activator_pin=STEPPER_ACTIVATOR_PIN,
-        steps_per_revolution=200)
+        steps_per_revolution=200,
+        delay=.0005)
 
-    drive.activate_stepper_pin()
+    drive.activate_stepper()
 
-    pid = PID(Kp, Ki, Kd, setpoint=setpoint)
+    pid = PID(Kp, Ki, Kd, setpoint=setpoint,
+              sample_time=0.016, output_limits=(0, 1000))
     old_time = time.time()
+
+    # init & and start steppers
+    drive.turn_both_steppers()
 
     # cycle used for activation switch checks
     cycle = 0
@@ -63,8 +70,11 @@ if __name__ == '__main__':
             angle_info = mpu.get_angle()
             v = angle_info[0] - ANGLE_OFFSET
             control = int(pid(v))
+            control = abs(control)
+            control = min_motor_speed if control < min_motor_speed else control
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
+
             # switch activated code
             if cycle % 100 == 0:
                 cycle = 0
@@ -72,15 +82,17 @@ if __name__ == '__main__':
                     drive.deactivate_stepper()
                     time.sleep(0.2)
                     continue
-                drive.activate_stepper_pin()
+                drive.activate_stepper()
             cycle += 1
             # switch activated code
+
             if v > setpoint:
-                drive.turn_stepper_degree(abs(control))
+                drive.set_stepper_rotation_clockwise(True)
             else:
-                drive.turn_stepper_degree(abs(control), False)
+                drive.set_stepper_rotation_clockwise(False)
 
             # drive.change_speed_all(control)
 
     except KeyboardInterrupt:
+        drive.deactivate_stepper()
         print('Stopped!')
