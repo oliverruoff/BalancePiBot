@@ -10,8 +10,6 @@ from sensing import mpu6050
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 setpoint = 0
-# required for motors to start turning (normally around 55)
-min_motor_speed = 40
 
 Kp = 1
 Ki = 0
@@ -68,11 +66,8 @@ if __name__ == '__main__':
             angle_info = mpu.get_angle()
             v = angle_info[0] - ANGLE_OFFSET
             control = int(pid(v))
-            control = abs(control)
-            control = min_motor_speed if control < min_motor_speed else control
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
-
             # switch activated code
             if cycle % 100 == 0:
                 cycle = 0
