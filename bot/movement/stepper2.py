@@ -12,6 +12,8 @@ STEPPER_ACTIVATION_PIN = 24  # If set to Low, there is no holding torque on the 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR, GPIO.OUT)
 GPIO.setup(STEP, GPIO.OUT)
+
+GPIO.setup(STEPPER_ACTIVATION_PIN, GPIO.OUT)
 # GPIO.setup(STEPPER_ACTIVATION_PIN, GPIO.OUT)
 
 GPIO.output(DIR, CW)
