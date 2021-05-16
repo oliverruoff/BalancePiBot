@@ -63,8 +63,8 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
             # setting motor speed
-            motor_driver.change_right_duty_cycle(control)
-            motor_driver.change_left_duty_cycle(control)
+            motor_driver.change_right_duty_cycle(abs(control))
+            motor_driver.change_left_duty_cycle(abs(control))
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
