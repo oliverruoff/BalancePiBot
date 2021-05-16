@@ -12,10 +12,10 @@ from sensors import mpu6050
 SETPOINT = 0
 
 # If motors need some specify duty cycle to spin
-MIN_DUTY_CYCLE = 10
+MIN_DUTY_CYCLE = 15
 
 # For PID controller
-Kp = 6
+Kp = 8
 Ki = 0
 Kd = 0
 
