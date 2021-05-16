@@ -41,8 +41,8 @@ class l298n:
         # setting all pins to low at start
         GPIO.output(in1_pin, GPIO.HIGH)
         GPIO.output(in2_pin, GPIO.LOW)
-        GPIO.output(in3_pin, GPIO.HIGH)
-        GPIO.output(in4_pin, GPIO.LOW)
+        GPIO.output(in3_pin, GPIO.LOW)
+        GPIO.output(in4_pin, GPIO.HIGH)
 
         # right motor
         p_a = GPIO.PWM(enb_pin, 1000)
@@ -65,30 +65,30 @@ class l298n:
         self.right_duty_cycle = duty_cycle
         self.p_b.ChangeDutyCycle(duty_cycle)
 
-    def change_left_motor_direction(self, clockwise):
+    def change_left_direction(self, clockwise):
         if clockwise:
-            GPIO.output(self.in1_pin, GPIO.HIGH)
-            GPIO.output(self.in2_pin, GPIO.LOW)
-        else:
             GPIO.output(self.in1_pin, GPIO.LOW)
             GPIO.output(self.in2_pin, GPIO.HIGH)
-
-    def change_right_motor_direction(self, clockwise):
-        if clockwise:
-            GPIO.output(self.in3_pin, GPIO.HIGH)
-            GPIO.output(self.in4_pin, GPIO.LOW)
         else:
+            GPIO.output(self.in1_pin, GPIO.HIGH)
+            GPIO.output(self.in2_pin, GPIO.LOW)
+
+    def change_right_direction(self, clockwise):
+        if clockwise:
             GPIO.output(self.in3_pin, GPIO.LOW)
             GPIO.output(self.in4_pin, GPIO.HIGH)
+        else:
+            GPIO.output(self.in3_pin, GPIO.HIGH)
+            GPIO.output(self.in4_pin, GPIO.LOW)
 
-    def stop_left_motor(self):
+    def stop_left(self):
         GPIO.output(self.in1_pin, GPIO.LOW)
         GPIO.output(self.in2_pin, GPIO.LOW)
 
-    def stop_right_motor(self):
+    def stop_right(self):
         GPIO.output(self.in3_pin, GPIO.LOW)
         GPIO.output(self.in4_pin, GPIO.LOW)
 
-    def stop_motors(self):
+    def stop_both(self):
         self.stop_left_motor()
         self.stop_right_motor()

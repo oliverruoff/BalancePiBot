@@ -47,9 +47,12 @@ if __name__ == '__main__':
     try:
         # motor_driver.change_left_duty_cycle(20)
         motor_driver.change_left_duty_cycle(20)
-        time.sleep(10000)
+        time.sleep(5000)
+        motor_driver.change_left_duty_cycle(10)
+        time.sleep(5000)
+        motor_driver.change_left_direction(False)
     except KeyboardInterrupt:
-        motor_driver.stop_motors()
+        motor_driver.stop_both()
         print('Stopped!')
 
     time.sleep(20)
@@ -69,14 +72,14 @@ if __name__ == '__main__':
                   angle_info[3], '| PID weights:', pid.components)
 
             if v > setpoint:
-                motor_driver.change_left_motor_direction(True)
-                motor_driver.change_right_motor_direction(True)
+                motor_driver.change_left_direction(True)
+                motor_driver.change_right_direction(True)
             else:
-                motor_driver.change_left_motor_direction(False)
-                motor_driver.change_right_motor_direction(False)
+                motor_driver.change_left_direction(False)
+                motor_driver.change_right_direction(False)
 
             # drive.change_speed_all(control)
 
     except KeyboardInterrupt:
-        motor_driver.stop_motors()
+        motor_driver.stop_both()
         print('Stopped!')
