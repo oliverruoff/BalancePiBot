@@ -47,10 +47,11 @@ if __name__ == '__main__':
     try:
         # motor_driver.change_left_duty_cycle(20)
         motor_driver.change_left_duty_cycle(20)
-        time.sleep(5000)
+        time.sleep(5)
         motor_driver.change_left_duty_cycle(10)
-        time.sleep(5000)
+        time.sleep(5)
         motor_driver.change_left_direction(False)
+        time.sleep(10)
     except KeyboardInterrupt:
         motor_driver.stop_both()
         print('Stopped!')
