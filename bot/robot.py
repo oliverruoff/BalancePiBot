@@ -45,7 +45,7 @@ if __name__ == '__main__':
         gpio_mode=GPIO_MODE)
 
     try:
-        motor_driver.change_left_duty_cycle(20)
+        # motor_driver.change_left_duty_cycle(20)
         motor_driver.change_left_duty_cycle(20)
         time.sleep(10000)
     except KeyboardInterrupt:

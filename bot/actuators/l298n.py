@@ -45,12 +45,12 @@ class l298n:
         GPIO.output(in4_pin, GPIO.LOW)
 
         # right motor
-        p_a = GPIO.PWM(ena_pin, 1000)
+        p_a = GPIO.PWM(enb_pin, 1000)
         self.p_a = p_a
         p_a.start(0)
 
         # left motor
-        p_b = GPIO.PWM(enb_pin, 1000)
+        p_b = GPIO.PWM(ena_pin, 1000)
         self.p_b = p_b
         p_b.start(0)
 
