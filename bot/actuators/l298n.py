@@ -39,9 +39,9 @@ class l298n:
         GPIO.setup(enb_pin, GPIO.OUT)
 
         # setting all pins to low at start
-        GPIO.output(in1_pin, GPIO.LOW)
+        GPIO.output(in1_pin, GPIO.HIGH)
         GPIO.output(in2_pin, GPIO.LOW)
-        GPIO.output(in3_pin, GPIO.LOW)
+        GPIO.output(in3_pin, GPIO.HIGH)
         GPIO.output(in4_pin, GPIO.LOW)
 
         # right motor
