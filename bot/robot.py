@@ -50,7 +50,7 @@ if __name__ == '__main__':
     mpu.setUp()
     mpu.calibrateGyro(50)
 
-    old_time = 1000
+    old_time = time.time()
 
     try:
         while(True):
@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 time.sleep(0.1)
 
             this_time = time.time()
-            frequency = 1 / (this_time - this_time)
+            frequency = 1 / (this_time - old_time)
             old_time = this_time
 
             roll, pitch, yaw = mpu.compFilter()
