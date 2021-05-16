@@ -44,25 +44,9 @@ if __name__ == '__main__':
         enb_pin=11,
         gpio_mode=GPIO_MODE)
 
-    try:
-        # motor_driver.change_left_duty_cycle(20)
-        motor_driver.change_right_duty_cycle(20)
-        time.sleep(5)
-        motor_driver.change_right_duty_cycle(10)
-        time.sleep(5)
-        motor_driver.change_right_direction(False)
-        time.sleep(10)
-    except KeyboardInterrupt:
-        motor_driver.stop_both()
-        print('Stopped!')
-
-    time.sleep(20)
-
-    pid = PID(Kp, Ki, Kd, setpoint=setpoint, output_limits=(0, 100))
+    pid = PID(Kp, Ki, Kd, setpoint=setpoint, output_limits=(-100, 100))
     old_time = time.time()
 
-    # cycle used for activation switch checks
-    cycle = 0
     try:
         while(True):
             angle_info = mpu.get_angle()
@@ -72,14 +56,16 @@ if __name__ == '__main__':
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
 
-            if v > setpoint:
+            # setting direction
+            if control > setpoint:
                 motor_driver.change_left_direction(True)
                 motor_driver.change_right_direction(True)
             else:
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
-
-            # drive.change_speed_all(control)
+            # setting motor speed
+            motor_driver.change_right_duty_cycle(control)
+            motor_driver.change_left_duty_cycle(control)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
