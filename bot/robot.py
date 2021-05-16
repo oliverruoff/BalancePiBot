@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 motor_driver.change_right_direction(False)
             # setting motor speed
             control = abs(control)
-            control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE else control
+            control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
 
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
