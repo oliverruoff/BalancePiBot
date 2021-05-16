@@ -39,7 +39,7 @@ if __name__ == '__main__':
         gpio_mode=GPIO_MODE)
 
     pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
-              sample_time=0.005, output_limits=(-100, 100))
+              sample_time=0.008, output_limits=(-100, 100))
 
     gyro = 250      # 250, 500, 1000, 2000 [deg/s]
     acc = 2         # 2, 4, 7, 16 [g]
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
             roll, pitch, yaw = mpu.compFilter()
 
-            print('R:', roll, '| Pitch:', pitch, '| Yaw:', yaw)
+            print('Roll:', roll, '| Pitch:', pitch, '| Yaw:', yaw)
 
             control = int(pid(roll))
 
