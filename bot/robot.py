@@ -1,3 +1,4 @@
+from _deprecated.robot import STEPPER_ACTIVATOR_PIN
 import time
 
 import RPi.GPIO as GPIO
@@ -10,7 +11,7 @@ from sensors import mpu6050
 
 setpoint = 0
 
-Kp = 1
+Kp = 4
 Ki = 0
 Kd = 0
 
@@ -19,21 +20,12 @@ GPIO_MODE = GPIO.BCM
 GPIO.setmode(GPIO_MODE)
 
 # STABILITY SWITCH
-STABILITY_SWITCH_PIN = 16
+STABILITY_SWITCH_PIN = 17
 GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 
 mpu = mpu6050.mpu6050()
 
-
-def stability_switch_changed(channel):
-    GPIO.output(STEPPER_ACTIVATOR_PIN, GPIO.input(STABILITY_SWITCH_PIN))
-    print(GPIO.input(STABILITY_SWITCH_PIN))
-
-
 if __name__ == '__main__':
-    # Wait for the input to go low, run the function when it does
-    # GPIO.add_event_detect(STABILITY_SWITCH_PIN, GPIO.BOTH,
-    #                     callback=stability_switch_changed, bouncetime=200)
 
     motor_driver = l298n.l298n(
         in1_pin=19,
@@ -49,6 +41,10 @@ if __name__ == '__main__':
 
     try:
         while(True):
+            if GPIO.input(STABILITY_SWITCH_PIN):
+                motor_driver.stop_both()
+                time.sleep(0.1)
+
             angle_info = mpu.get_angle()
             v = angle_info[0]
             control = int(pid(v))
