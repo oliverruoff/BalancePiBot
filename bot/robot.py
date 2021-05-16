@@ -8,9 +8,14 @@ from sensors import mpu6050
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-setpoint = 0
+# If robot center weight is not centered
+SETPOINT = 0
 
-Kp = 4
+# If motors need some specify duty cycle to spin
+MIN_DUTY_CYCLE = 10
+
+# For PID controller
+Kp = 6
 Ki = 0
 Kd = 0
 
@@ -35,7 +40,8 @@ if __name__ == '__main__':
         enb_pin=11,
         gpio_mode=GPIO_MODE)
 
-    pid = PID(Kp, Ki, Kd, setpoint=setpoint, output_limits=(-100, 100))
+    pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
+              sample_time=0.005, output_limits=(-100, 100))
     old_time = time.time()
 
     try:
@@ -48,17 +54,21 @@ if __name__ == '__main__':
             angle_info = mpu.get_angle()
             v = angle_info[0]
             control = int(pid(v))
-            print('V:', v, '| control:', control, '| Frequency:',
-                  angle_info[3], '| PID weights:', pid.components)
 
             # setting direction
-            if control > setpoint:
+            if control > SETPOINT:
                 motor_driver.change_left_direction(True)
                 motor_driver.change_right_direction(True)
             else:
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
             # setting motor speed
+            control = abs(control)
+            control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE else control
+
+            print('V:', v, '| control:', control, '| Frequency:',
+                  angle_info[3], '| PID weights:', pid.components)
+
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
 
