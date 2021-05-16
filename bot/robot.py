@@ -1,4 +1,3 @@
-from _deprecated.robot import STEPPER_ACTIVATOR_PIN
 import time
 
 import RPi.GPIO as GPIO
