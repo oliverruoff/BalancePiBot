@@ -1,153 +1,161 @@
-'''
-        Read Gyro and Accelerometer by Interfacing Raspberry Pi with MPU6050 using Python
-        http://www.electronicwings.com
-'''
-import smbus  # import SMBus module of I2C
-from time import sleep  # import
-import time
+import smbus
 import math
-
-# some MPU6050 Registers and their Address
-PWR_MGMT_1 = 0x6B
-SMPLRT_DIV = 0x19
-CONFIG = 0x1A
-GYRO_CONFIG = 0x1B
-INT_ENABLE = 0x38
-ACCEL_XOUT_H = 0x3B
-ACCEL_YOUT_H = 0x3D
-ACCEL_ZOUT_H = 0x3F
-GYRO_XOUT_H = 0x43
-GYRO_YOUT_H = 0x45
-GYRO_ZOUT_H = 0x47
-
-# Full scale range +/- 250 degree/C as per sensitivity scale factor
-MPU_SENSOR_GYRO_CONSTANT = 131.0
-MPU_SENSOR_ACCEL_CONSTANT = 16384.0
-
-bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
-Device_Address = 0x68   # MPU6050 device address
-
-# weight for the gyro angle for complementary filter 1-GYRO_WEIGHT is accel weight
-GYRO_WEIGHT = 0.99
+import time
 
 
 class mpu6050:
+    def __init__(self, gyro, acc, tau):
+        # Class / object / constructor setup
+        self.gx = None
+        self.gy = None
+        self.gz = None
+        self.ax = None
+        self.ay = None
+        self.az = None
 
-    def __init__(self):
+        self.gyroXcal = 0
+        self.gyroYcal = 0
+        self.gyroZcal = 0
 
-        self.MPU_Init()
-        self.gyro_drift = self.get_gyro_drift()
-        self.accel_avg = self.get_accel_error()
-        print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
-        self.gyro_angle = 0
-        self.complementary_filter_angle = 0
-        self.accel_angle = 0
-        self.last_time = time.time()
+        self.gyroRoll = 0
+        self.gyroPitch = 0
+        self.gyroYaw = 0
 
-    def MPU_Init(self):
-        # write to sample rate register
-        bus.write_byte_data(Device_Address, SMPLRT_DIV, 7)
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
 
-        # Write to power management register
-        bus.write_byte_data(Device_Address, PWR_MGMT_1, 1)
+        self.dtTimer = 0
+        self.tau = tau
 
-        # Write to Configuration register
-        bus.write_byte_data(Device_Address, CONFIG, 0)
+        self.gyroScaleFactor, self.gyroHex = self.gyroSensitivity(gyro)
+        self.accScaleFactor, self.accHex = self.accelerometerSensitivity(acc)
 
-        # Write to Gyro configuration register
-        bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
+        self.bus = smbus.SMBus(1)
+        self.address = 0x68
 
-        # Write to interrupt enable register
-        bus.write_byte_data(Device_Address, INT_ENABLE, 1)
+    def gyroSensitivity(self, x):
+        # Create dictionary with standard value of 500 deg/s
+        return {
+            250:  [131.0, 0x00],
+            500:  [65.5,  0x08],
+            1000: [32.8,  0x10],
+            2000: [16.4,  0x18]
+        }.get(x,  [65.5,  0x08])
 
-    def read_raw_data(self, addr):
-        # Accelero and Gyro value are 16-bit
-        high = bus.read_byte_data(Device_Address, addr)
-        low = bus.read_byte_data(Device_Address, addr+1)
+    def accelerometerSensitivity(self, x):
+        # Create dictionary with standard value of 4 g
+        return {
+            2:  [16384.0, 0x00],
+            4:  [8192.0,  0x08],
+            8:  [4096.0,  0x10],
+            16: [2048.0,  0x18]
+        }.get(x, [8192.0,  0x08])
 
-        # concatenate higher and lower value
-        value = ((high << 8) | low)
+    def setUp(self):
+        # Activate the MPU-6050
+        self.bus.write_byte_data(self.address, 0x6B, 0x00)
 
-        # to get signed value from mpu6050
-        if(value > 32768):
-            value = value - 65536
-        return value
+        # Configure the accelerometer
+        self.bus.write_byte_data(self.address, 0x1C, self.accHex)
 
-    def get_new_gyro_angle(self, axis, time_diff_s, old_angle=0, gyro_drift=0.4827480916030538, raw=False):
-        DEGREE_SCALE_CONSTANT = 8
-        if axis == 'x':
-            raw = self.read_raw_data(GYRO_XOUT_H)
-        elif axis == 'y':
-            raw = self.read_raw_data(GYRO_YOUT_H)
-        elif axis == 'z':
-            raw = self.read_raw_data(GYRO_ZOUT_H)
+        # Configure the gyro
+        self.bus.write_byte_data(self.address, 0x1B, self.gyroHex)
 
-        raw = raw / MPU_SENSOR_GYRO_CONSTANT
-        raw = (raw-gyro_drift) * DEGREE_SCALE_CONSTANT
-        if raw:
-            return raw
+        # Display message to user
+        print("MPU set up:")
+        print('\tAccelerometer: ' + str(self.accHex) +
+              ' ' + str(self.accScaleFactor))
+        print('\tGyro: ' + str(self.gyroHex) +
+              ' ' + str(self.gyroScaleFactor) + "\n")
+        time.sleep(2)
 
-        angle = old_angle + (raw * time_diff_s)
-        return angle
+    def eightBit2sixteenBit(self, reg):
+        # Reads high and low 8 bit values and shifts them into 16 bit
+        h = self.bus.read_byte_data(self.address, reg)
+        l = self.bus.read_byte_data(self.address, reg+1)
+        val = (h << 8) + l
 
-    def get_new_accel_angle(self, axis, initial_angle=0):
-        if axis == 'x':
-            raw = self.read_raw_data(ACCEL_XOUT_H)
-        elif axis == 'y':
-            raw = self.read_raw_data(ACCEL_YOUT_H)
-        elif axis == 'z':
-            raw = self.read_raw_data(ACCEL_ZOUT_H)
-        raw = raw / MPU_SENSOR_ACCEL_CONSTANT
+        # Make 16 bit unsigned value to signed value (0 to 65535) to (-32768 to +32767)
+        if (val >= 0x8000):
+            return -((65535 - val) + 1)
+        else:
+            return val
 
-        angle = raw * 180 + 180 - initial_angle
+    def getRawData(self):
+        self.gx = self.eightBit2sixteenBit(0x43)
+        self.gy = self.eightBit2sixteenBit(0x45)
+        self.gz = self.eightBit2sixteenBit(0x47)
 
-        return angle
+        self.ax = self.eightBit2sixteenBit(0x3B)
+        self.ay = self.eightBit2sixteenBit(0x3D)
+        self.az = self.eightBit2sixteenBit(0x3F)
 
-    def get_full_accel_data(self):
-        x = self.read_raw_data(ACCEL_XOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
-        y = self.read_raw_data(ACCEL_YOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
-        z = self.read_raw_data(ACCEL_ZOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
-        return (x, y, z)
+    def calibrateGyro(self, N):
+        # Display message
+        print("Calibrating gyro with " + str(N) + " points. Do not move!")
 
-    def dotproduct(self, v1, v2):
-        return sum((a*b) for a, b in zip(v1, v2))
+        # Take N readings for each coordinate and add to itself
+        for ii in range(N):
+            self.getRawData()
+            self.gyroXcal += self.gx
+            self.gyroYcal += self.gy
+            self.gyroZcal += self.gz
 
-    def length(self, v):
-        return math.sqrt(self.dotproduct(v, v))
+        # Find average offset value
+        self.gyroXcal /= N
+        self.gyroYcal /= N
+        self.gyroZcal /= N
 
-    def angle(self, v1, v2):
-        return math.acos(self.dotproduct(v1, v2) / (self.length(v1) * self.length(v2)))
+        # Display message and restart timer for comp filter
+        print("Calibration complete")
+        print("\tX axis offset: " + str(round(self.gyroXcal, 1)))
+        print("\tY axis offset: " + str(round(self.gyroYcal, 1)))
+        print("\tZ axis offset: " + str(round(self.gyroZcal, 1)) + "\n")
+        time.sleep(2)
+        self.dtTimer = time.time()
 
-    def get_accel_error(self, samples=100):
-        return sum([math.degrees(self.angle(self.get_full_accel_data(), (1, 0, 0))) for i in range(samples)])/samples
+    def processIMUvalues(self):
+        # Update the raw data
+        self.getRawData()
 
-    def get_gyro_drift(self, samples=100):
-        return sum([self.read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(samples)])/samples
+        # Subtract the offset calibration values
+        self.gx -= self.gyroXcal
+        self.gy -= self.gyroYcal
+        self.gz -= self.gyroZcal
 
-    def get_angle(self):
-        '''
-        Simply call this function in a loop to get angles.
-        Output:
-        [0] = angle from complementary filter
-        [1] = angle from gyro
-        [2] = angle from accel
-        [3] = Sampling frequency
-        '''
-        curr_time = time.time()
-        time_diff = curr_time - self.last_time
-        self.last_time = curr_time
+        # Convert to instantaneous degrees per second
+        self.gx /= self.gyroScaleFactor
+        self.gy /= self.gyroScaleFactor
+        self.gz /= self.gyroScaleFactor
 
-        gyro_raw = self.get_new_gyro_angle(
-            'y', time_diff, 0, self.gyro_drift, True)
-        accel_raw = self.get_full_accel_data()
-        accel_dir = 1 if accel_raw[2] > 0 else -1
+        # Convert to g force
+        self.ax /= self.accScaleFactor
+        self.ay /= self.accScaleFactor
+        self.az /= self.accScaleFactor
 
-        self.gyro_angle = self.gyro_angle + gyro_raw * time_diff
-        self.accel_angle = (math.degrees(self.angle(
-            accel_raw, (1, 0, 0))) - self.accel_avg) * accel_dir
+    def compFilter(self):
+        # Get the processed values from IMU
+        self.processIMUvalues()
 
-        self.complementary_filter_angle = (
-            GYRO_WEIGHT * (self.complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*self.accel_angle)
+        # Get delta time and record time for next call
+        dt = time.time() - self.dtTimer
+        self.dtTimer = time.time()
 
-        freq = 1 / time_diff
-        return (self.complementary_filter_angle, self.gyro_angle, self.accel_angle, freq)
+        # Acceleration vector angle
+        accPitch = math.degrees(math.atan2(self.ay, self.az))
+        accRoll = math.degrees(math.atan2(self.ax, self.az))
+
+        # Gyro integration angle
+        self.gyroRoll -= self.gy * dt
+        self.gyroPitch += self.gx * dt
+        self.gyroYaw += self.gz * dt
+        self.yaw = self.gyroYaw
+
+        # Comp filter
+        self.roll = (self.tau)*(self.roll - self.gy*dt) + \
+            (1-self.tau)*(accRoll)
+        self.pitch = (self.tau)*(self.pitch + self.gx*dt) + \
+            (1-self.tau)*(accPitch)
+
+        return round(self.roll, 1), round(self.pitch, 1), round(self.yaw, 1)

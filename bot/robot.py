@@ -9,7 +9,7 @@ from sensors import mpu6050
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # If robot center weight is not centered
-SETPOINT = 0
+SETPOINT = 176
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 15
@@ -42,6 +42,16 @@ if __name__ == '__main__':
 
     pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
               sample_time=0.005, output_limits=(-100, 100))
+
+    gyro = 250      # 250, 500, 1000, 2000 [deg/s]
+    acc = 2         # 2, 4, 7, 16 [g]
+    tau = 0.98
+    mpu = mpu6050.mpu6050(gyro, acc, tau)
+
+    # Set up sensor and calibrate gyro with N points
+    mpu.setUp()
+    mpu.calibrateGyro(50)
+
     old_time = time.time()
 
     try:
@@ -51,9 +61,15 @@ if __name__ == '__main__':
                 motor_driver.stop_both()
                 time.sleep(0.1)
 
-            angle_info = mpu.get_angle()
-            v = angle_info[0]
-            control = int(pid(v))
+            this_time = time.time()
+            frequency = 1 / (this_time - this_time)
+            old_time = this_time
+
+            roll, pitch, yaw = mpu.compFilter()
+
+            print('R:', roll, '| Pitch:', pitch, '| Yaw:', yaw)
+
+            control = int(pid(roll))
 
             # setting direction
             if control > SETPOINT:
@@ -66,8 +82,8 @@ if __name__ == '__main__':
             control = abs(control)
             control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
 
-            print('V:', v, '| control:', control, '| Frequency:',
-                  angle_info[3], '| PID weights:', pid.components)
+            print('V:', roll, '| control:', control, '| Frequency:',
+                  frequency, '| PID weights:', pid.components)
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
