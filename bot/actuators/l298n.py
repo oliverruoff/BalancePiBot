@@ -65,7 +65,7 @@ class l298n:
         self.right_duty_cycle = duty_cycle
         self.p_b.ChangeDutyCycle(duty_cycle)
 
-    def change_left_direction(self, clockwise):
+    def change_right_direction(self, clockwise):
         if clockwise:
             GPIO.output(self.in1_pin, GPIO.LOW)
             GPIO.output(self.in2_pin, GPIO.HIGH)
@@ -73,7 +73,7 @@ class l298n:
             GPIO.output(self.in1_pin, GPIO.HIGH)
             GPIO.output(self.in2_pin, GPIO.LOW)
 
-    def change_right_direction(self, clockwise):
+    def change_left_direction(self, clockwise):
         if clockwise:
             GPIO.output(self.in3_pin, GPIO.LOW)
             GPIO.output(self.in4_pin, GPIO.HIGH)
