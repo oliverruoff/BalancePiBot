@@ -65,11 +65,11 @@ class l298n:
 
     def change_right_direction(self, clockwise):
         if clockwise:
-            GPIO.output(self.in1_pin, GPIO.HIGH)
-            GPIO.output(self.in2_pin, GPIO.LOW)
-        else:
             GPIO.output(self.in1_pin, GPIO.LOW)
             GPIO.output(self.in2_pin, GPIO.HIGH)
+        else:
+            GPIO.output(self.in1_pin, GPIO.HIGH)
+            GPIO.output(self.in2_pin, GPIO.LOW)
 
     def change_left_direction(self, clockwise):
         if clockwise:
