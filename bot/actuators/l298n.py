@@ -39,10 +39,8 @@ class l298n:
         GPIO.setup(enb_pin, GPIO.OUT)
 
         # setting all pins to low at start
-        GPIO.output(in1_pin, GPIO.HIGH)
-        GPIO.output(in2_pin, GPIO.LOW)
-        GPIO.output(in3_pin, GPIO.LOW)
-        GPIO.output(in4_pin, GPIO.HIGH)
+        self.change_left_direction(True)
+        self.change_right_direction(True)
 
         # right motor
         p_a = GPIO.PWM(enb_pin, 1000)
