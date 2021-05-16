@@ -50,7 +50,7 @@ if __name__ == '__main__':
     mpu.setUp()
     mpu.calibrateGyro(50)
 
-    old_time = time.time()
+    old_time = 1000
 
     try:
         while(True):
