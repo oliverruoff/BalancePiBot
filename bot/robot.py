@@ -52,7 +52,6 @@ if __name__ == '__main__':
             angle_info = mpu.get_angle()
             v = angle_info[0]
             control = int(pid(v))
-            control = abs(control)
             print('V:', v, '| control:', control, '| Frequency:',
                   angle_info[3], '| PID weights:', pid.components)
 
