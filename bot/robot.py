@@ -40,7 +40,9 @@ if __name__ == '__main__':
 
     try:
         while(True):
-            if GPIO.input(STABILITY_SWITCH_PIN):
+            stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
+            print('Stability Switch: ', stability_switch)
+            if stability_switch:
                 motor_driver.stop_both()
                 time.sleep(0.1)
 

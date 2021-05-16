@@ -88,5 +88,5 @@ class l298n:
         GPIO.output(self.in4_pin, GPIO.LOW)
 
     def stop_both(self):
-        self.stop_left_motor()
-        self.stop_right_motor()
+        self.stop_left()
+        self.stop_right()
