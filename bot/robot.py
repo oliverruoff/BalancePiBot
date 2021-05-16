@@ -27,8 +27,6 @@ GPIO.setmode(GPIO_MODE)
 STABILITY_SWITCH_PIN = 17
 GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 
-mpu = mpu6050.mpu6050()
-
 if __name__ == '__main__':
 
     motor_driver = l298n.l298n(
