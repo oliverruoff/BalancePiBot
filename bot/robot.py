@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     # Set up sensor and calibrate gyro with N points
     mpu.setUp()
-    mpu.calibrateGyro(50)
+    mpu.calibrateGyro(500)
 
     old_time = time.time()
 

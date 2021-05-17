@@ -68,7 +68,6 @@ class mpu6050:
               ' ' + str(self.accScaleFactor))
         print('\tGyro: ' + str(self.gyroHex) +
               ' ' + str(self.gyroScaleFactor) + "\n")
-        time.sleep(2)
 
     def eightBit2sixteenBit(self, reg):
         # Reads high and low 8 bit values and shifts them into 16 bit
