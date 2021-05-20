@@ -28,7 +28,7 @@ bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
 Device_Address = 0x68   # MPU6050 device address
 
 # weight for the gyro angle for complementary filter 1-GYRO_WEIGHT is accel weight
-GYRO_WEIGHT = 0.99
+GYRO_WEIGHT = 0.98
 
 
 class mpu6050:
@@ -37,8 +37,7 @@ class mpu6050:
 
         self.MPU_Init()
         self.gyro_drift = self.get_gyro_drift()
-        # self.get_accel_error() # Use get_accel_error() to define avg
-        self.accel_avg = 89.24480651102664
+        self.accel_avg = self.get_accel_error()
         print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
         self.gyro_angle = 0
         self.complementary_filter_angle = 0

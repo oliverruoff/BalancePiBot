@@ -13,12 +13,12 @@ from actuators import l298n
 SETPOINT = -0.6
 
 # If motors need some specify duty cycle to spin
-MIN_DUTY_CYCLE = 20
+MIN_DUTY_CYCLE = 0
 
 # For PID controller
-Kp = 13
-Ki = 100
-Kd = 0.6
+Kp = 14
+Ki = 200
+Kd = 0.5
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 GPIO_MODE = GPIO.BCM
@@ -56,7 +56,10 @@ if __name__ == '__main__':
             stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
             if not stability_switch:
                 motor_driver.stop_both()
-                time.sleep(0.1)
+                time.sleep(0.01)
+                accel_avg = mpu.get_accel_error()
+                mpu.accel_avg = accel_avg
+                print('Recalibrated accel error:', accel_avg)
 
             this_time = time.time()
             frequency = 1 / (this_time - old_time)
