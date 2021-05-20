@@ -10,13 +10,13 @@ from actuators import l298n
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # If robot center weight is not centered
-SETPOINT = 176
+SETPOINT = 0
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 15
 
 # For PID controller
-Kp = 8
+Kp = 1
 Ki = 0
 Kd = 0
 
@@ -44,10 +44,10 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
-    while (True):
-        data = mpu.get_angle()
-        print('compl:', int(data[0]), 'gyro:', int(
-            data[1]), 'accel:', int(data[2]), 'freq:', int(data[3]))
+    # while (True):
+    #    data = mpu.get_angle()
+    #    print('compl:', int(data[0]), 'gyro:', int(
+    #        data[1]), 'accel:', int(data[2]), 'freq:', int(data[3]))
 
     old_time = time.time()
 
@@ -62,11 +62,16 @@ if __name__ == '__main__':
             frequency = 1 / (this_time - old_time)
             old_time = this_time
 
-            roll, pitch, yaw = mpu.compFilter()
+            data = mpu.get_angle()
 
-            print('Roll:', roll, '| Pitch:', pitch, '| Yaw:', yaw)
+            print('compl:', int(data[0]), 'gyro:', int(
+                data[1]), 'accel:', int(data[2]), 'freq:', int(data[3]))
 
-            control = int(pid(roll))
+            control = pid(int(data[0]))
+
+            print('compl:', int(data[0]), 'gyro:', int(
+                data[1]), 'accel:', int(data[2]), 'freq:',
+                int(data[3]), 'control:', control)
 
             # setting direction
             if control > SETPOINT:
@@ -78,9 +83,6 @@ if __name__ == '__main__':
             # setting motor speed
             control = abs(control)
             control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
-
-            print('V:', roll, '| control:', control, '| Frequency:',
-                  frequency, '| PID weights:', pid.components)
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
