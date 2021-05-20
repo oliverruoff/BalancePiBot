@@ -16,7 +16,7 @@ SETPOINT = 0
 MIN_DUTY_CYCLE = 15
 
 # For PID controller
-Kp = 1
+Kp = 5
 Ki = 0
 Kd = 0
 
@@ -64,14 +64,7 @@ if __name__ == '__main__':
 
             data = mpu.get_angle()
 
-            print('compl:', int(data[0]), 'gyro:', int(
-                data[1]), 'accel:', int(data[2]), 'freq:', int(data[3]))
-
             control = pid(int(data[0]))
-
-            print('compl:', int(data[0]), 'gyro:', int(
-                data[1]), 'accel:', int(data[2]), 'freq:',
-                int(data[3]), 'control:', control)
 
             # setting direction
             if control > SETPOINT:
@@ -83,6 +76,10 @@ if __name__ == '__main__':
             # setting motor speed
             control = abs(control)
             control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
+
+            print('compl:', int(data[0]), 'gyro:', int(
+                data[1]), 'accel:', int(data[2]), 'freq:',
+                int(data[3]), 'control:', control)
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
