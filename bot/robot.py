@@ -2,8 +2,8 @@ import time
 
 import RPi.GPIO as GPIO
 from simple_pid import PID
-from mpu6050 import mpu6050
 
+from sensors import mpu6050
 from actuators import l298n
 
 
@@ -42,10 +42,11 @@ if __name__ == '__main__':
     pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
               sample_time=0.008, output_limits=(-100, 100))
 
-    mpu = sensor = mpu6050(0x68)
+    mpu = mpu6050.mpu6050()
 
     while (True):
-        print(mpu.get_all_data())
+
+        print(mpu.get_angle())
 
     old_time = time.time()
 
