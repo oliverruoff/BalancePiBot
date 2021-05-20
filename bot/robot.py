@@ -46,7 +46,8 @@ if __name__ == '__main__':
 
     while (True):
         data = mpu.get_angle()
-        print(int(data[0]), int(data[1]), int(data[2]), int(data[3]))
+        print('compl:', int(data[0]), 'gyro:', int(
+            data[1]), 'accel:', int(data[2]), 'freq:', int(data[3]))
 
     old_time = time.time()
 
