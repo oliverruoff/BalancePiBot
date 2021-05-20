@@ -10,15 +10,15 @@ from actuators import l298n
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # If robot center weight is not centered
-SETPOINT = 0
+SETPOINT = -0.6
 
 # If motors need some specify duty cycle to spin
-MIN_DUTY_CYCLE = 15
+MIN_DUTY_CYCLE = 20
 
 # For PID controller
 Kp = 13
-Ki = 0
-Kd = 0
+Ki = 100
+Kd = 0.6
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 GPIO_MODE = GPIO.BCM
