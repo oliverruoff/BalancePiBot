@@ -140,17 +140,16 @@ class mpu6050:
         gyro_raw = self.get_new_gyro_angle(
             'y', time_diff, 0, self.gyro_drift, True)
 
-        print('Gyro:', gyro_raw)
-
         accel_raw = self.get_full_accel_data()
-
-        print('Accel:', accel_raw)
 
         accel_dir = 1 if accel_raw[2] > 0 else -1
 
         self.gyro_angle = self.gyro_angle + gyro_raw * time_diff
         self.accel_angle = (math.degrees(self.angle(
             accel_raw, (1, 0, 0))) - self.accel_avg) * accel_dir
+
+        print('Gyro:', self.gyro_angle)
+        print('Accel:', self.accel_angle)
 
         self.complementary_filter_angle = (
             GYRO_WEIGHT * (self.complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*self.accel_angle)
