@@ -2,9 +2,10 @@ import time
 
 import RPi.GPIO as GPIO
 from simple_pid import PID
+from mpu6050 import mpu6050
 
 from actuators import l298n
-from sensors import mpu6050
+
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
@@ -41,14 +42,10 @@ if __name__ == '__main__':
     pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
               sample_time=0.008, output_limits=(-100, 100))
 
-    gyro = 250      # 250, 500, 1000, 2000 [deg/s]
-    acc = 2         # 2, 4, 7, 16 [g]
-    tau = 0.98
-    mpu = mpu6050.mpu6050(gyro, acc, tau)
+    mpu = sensor = mpu6050(0x68)
 
-    # Set up sensor and calibrate gyro with N points
-    mpu.setUp()
-    mpu.calibrateGyro(500)
+    while (True):
+        print(mpu.get_all_data())
 
     old_time = time.time()
 
