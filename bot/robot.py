@@ -16,7 +16,7 @@ SETPOINT = 0
 MIN_DUTY_CYCLE = 15
 
 # For PID controller
-Kp = 5
+Kp = 13
 Ki = 0
 Kd = 0
 
