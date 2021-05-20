@@ -10,7 +10,7 @@ from actuators import l298n
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # If robot center weight is not centered
-SETPOINT = -0.6
+SETPOINT = 0
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 0
@@ -18,7 +18,7 @@ MIN_DUTY_CYCLE = 0
 # For PID controller
 Kp = 14
 Ki = 200
-Kd = 0.5
+Kd = 0.6
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 GPIO_MODE = GPIO.BCM
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         gpio_mode=GPIO_MODE)
 
     pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
-              sample_time=0.008, output_limits=(-100, 100))
+              sample_time=0.005, output_limits=(-100, 100))
 
     mpu = mpu6050.mpu6050()
 
