@@ -148,8 +148,8 @@ class mpu6050:
         self.accel_angle = (math.degrees(self.angle(
             accel_raw, (1, 0, 0))) - self.accel_avg) * accel_dir
 
-        print('Gyro:', self.gyro_angle)
-        print('Accel:', self.accel_angle)
+        print('Gyro:', int(self.gyro_angle))
+        print('Accel:', int(self.accel_angle))
 
         self.complementary_filter_angle = (
             GYRO_WEIGHT * (self.complementary_filter_angle + gyro_raw * time_diff)) + ((1-GYRO_WEIGHT)*self.accel_angle)

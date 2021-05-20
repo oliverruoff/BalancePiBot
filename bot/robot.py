@@ -45,8 +45,8 @@ if __name__ == '__main__':
     mpu = mpu6050.mpu6050()
 
     while (True):
-
-        print(mpu.get_angle())
+        data = mpu.get_angle()
+        print(int(data[0]), int(data[1]), int(data[2]), int(data[3]))
 
     old_time = time.time()
 
