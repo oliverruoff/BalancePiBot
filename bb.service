@@ -1,0 +1,13 @@
+[Unit]
+Description=BalanceBot stability service.
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/develop/BalancePiBot/bot
+ExecStart=/usr/bin/python3 /home/pi/develop/BalancePiBot/bot/robot.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
