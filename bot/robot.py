@@ -5,9 +5,12 @@ from simple_pid import PID
 
 from sensors import mpu6050
 from actuators import l298n
-
+from inou import inout
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
+
+# URL to send telemtry data to
+SERVER_URL = '192.168.178.32:5000/telemetry'
 
 # If robot center weight is not centered
 SETPOINT = 0
@@ -44,11 +47,6 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
-    # while (True):
-    #    data = mpu.get_angle()
-    #    print('compl:', int(data[0]), 'gyro:', int(
-    #        data[1]), 'accel:', int(data[2]), 'freq:', int(data[3]))
-
     old_time = time.time()
 
     try:
@@ -67,7 +65,12 @@ if __name__ == '__main__':
 
             data = mpu.get_angle()
 
-            control = pid(int(data[0]))
+            comp_angle = int(data[0])
+            gyro_angle = int(data[1])
+            accel_angle = int(data[2])
+            frequency = int(data[3])
+
+            control = pid(comp_angle)
 
             # setting direction
             if control > SETPOINT:
@@ -80,9 +83,12 @@ if __name__ == '__main__':
             control = abs(control)
             control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
 
-            print('compl:', int(data[0]), 'gyro:', int(
-                data[1]), 'accel:', int(data[2]), 'freq:',
-                int(data[3]), 'control:', control)
+            print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
+                  frequency, 'control:', control)
+
+            # sending telemetry data to server
+            inout.post_telemetry(SERVER_URL, time.now(),
+                                 comp_angle, gyro_angle, accel_angle, control, frequency)
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
