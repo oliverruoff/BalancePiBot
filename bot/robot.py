@@ -12,6 +12,9 @@ from inout import inou
 # URL to send telemtry data to
 SERVER_URL = '192.168.178.32:5000/telemetry'
 
+DEBUG = True
+TELEMTRY_TRANSMISSION = True
+
 # If robot center weight is not centered
 SETPOINT = 0
 
@@ -83,15 +86,17 @@ if __name__ == '__main__':
             control = abs(control)
             control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
 
-            print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
-                  frequency, 'control:', control)
+            if DEBUG:
+                print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
+                      frequency, 'control:', control)
 
             # sending telemetry data to server
-            try:
-                inou.post_telemetry(SERVER_URL, time.time(),
-                                    comp_angle, gyro_angle, accel_angle, control, frequency)
-            except:
-                print('Couldn`t connect to server..')
+            if TELEMTRY_TRANSMISSION:
+                try:
+                    inou.post_telemetry(SERVER_URL, time.time(),
+                                        comp_angle, gyro_angle, accel_angle, control, frequency)
+                except:
+                    print('Couldn`t connect to server..')
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
