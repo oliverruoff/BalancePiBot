@@ -87,7 +87,7 @@ if __name__ == '__main__':
                   frequency, 'control:', control)
 
             # sending telemetry data to server
-            inou.post_telemetry(SERVER_URL, time.time.now(),
+            inou.post_telemetry(SERVER_URL, time.time(),
                                 comp_angle, gyro_angle, accel_angle, control, frequency)
 
             motor_driver.change_right_duty_cycle(abs(control))
