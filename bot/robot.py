@@ -87,8 +87,11 @@ if __name__ == '__main__':
                   frequency, 'control:', control)
 
             # sending telemetry data to server
-            inou.post_telemetry(SERVER_URL, time.time(),
-                                comp_angle, gyro_angle, accel_angle, control, frequency)
+            try:
+                inou.post_telemetry(SERVER_URL, time.time(),
+                                    comp_angle, gyro_angle, accel_angle, control, frequency)
+            except:
+                print('Couldn`t connect to server..')
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
