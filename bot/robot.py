@@ -5,7 +5,7 @@ from simple_pid import PID
 
 from sensors import mpu6050
 from actuators import l298n
-from inou import inout
+from inout import inou
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
@@ -87,8 +87,8 @@ if __name__ == '__main__':
                   frequency, 'control:', control)
 
             # sending telemetry data to server
-            inout.post_telemetry(SERVER_URL, time.now(),
-                                 comp_angle, gyro_angle, accel_angle, control, frequency)
+            inou.post_telemetry(SERVER_URL, time.now(),
+                                comp_angle, gyro_angle, accel_angle, control, frequency)
 
             motor_driver.change_right_duty_cycle(abs(control))
             motor_driver.change_left_duty_cycle(abs(control))
