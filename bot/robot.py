@@ -10,7 +10,7 @@ from inout import inou
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # URL to send telemtry data to
-SERVER_URL = '192.168.178.32:5000/telemetry'
+SERVER_URL = 'http://192.168.178.32:5000/telemetry'
 
 DEBUG = True
 TELEMTRY_TRANSMISSION = True
