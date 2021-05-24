@@ -1,7 +1,7 @@
 import requests
 import time
 
-SERVER_URL = 'http://127.0.0.1:5000/telemetry'
+SERVER_URL = 'http://192.168.178.32:5000/telemetry'
 
 
 def post_telemetry(server_url, timestampms, comp_angle, gyro_angle, accel_angle, control, frequency):
