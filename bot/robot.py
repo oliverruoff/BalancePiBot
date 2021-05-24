@@ -5,7 +5,7 @@ from simple_pid import PID
 
 from sensors import mpu6050
 from actuators import l298n
-from inout import inou
+from transmission import transmittor
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
@@ -50,6 +50,8 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
+    transmit = transmittor.transmittor(SERVER_URL, 1)
+
     try:
         while(True):
             data = mpu.get_angle()
@@ -71,8 +73,8 @@ if __name__ == '__main__':
 
             # sending telemetry data to server
             if TELEMTRY_TRANSMISSION:
-                inou.post_telemetry(SERVER_URL, time.time(),
-                                    comp_angle, gyro_angle, accel_angle, abs_min_control, frequency)
+                transmit.collect_telemetry(
+                    comp_angle, gyro_angle, accel_angle, abs_min_control, frequency)
 
             stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
             if not stability_switch:
