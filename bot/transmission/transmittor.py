@@ -35,3 +35,4 @@ class transmittor:
             t1 = threading.Thread(target=self.post_telemetry)
             t1.start()
             self.last_transmission_time = now
+            self.telemetry_list = []
