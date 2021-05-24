@@ -1,13 +1,14 @@
 #!flask/bin/python
 from flask import Flask, request
+import json
 
 app = Flask(__name__)
 
 
-@app.route('/telemetry')
+@app.route("/telemetry", methods=["POST"])
 def index():
-    data = request.data
-    print(data)
+    data = json.loads(request.data)
+    print('Received:', data)
     return "Hello, World!"
 
 

@@ -1,4 +1,7 @@
 import requests
+import time
+
+SERVER_URL = 'http://127.0.0.1:5000/telemetry'
 
 
 def post_telemetry(server_url, timestampms, comp_angle, gyro_angle, accel_angle, control, frequency):
@@ -12,3 +15,6 @@ def post_telemetry(server_url, timestampms, comp_angle, gyro_angle, accel_angle,
                             'frequency': frequency})
     except Exception as e:
         print(e)
+
+
+post_telemetry(SERVER_URL, time.time(), 1, 2, 3, 4, 5)
