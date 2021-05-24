@@ -16,7 +16,7 @@ DEBUG = True
 TELEMTRY_TRANSMISSION = True
 
 # If robot center weight is not centered
-SETPOINT = 0
+SETPOINT = -1
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 0
