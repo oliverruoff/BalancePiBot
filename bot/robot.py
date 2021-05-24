@@ -50,22 +50,8 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
-    old_time = time.time()
-
     try:
         while(True):
-            stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
-            if not stability_switch:
-                motor_driver.stop_both()
-                time.sleep(0.01)
-                accel_avg = mpu.get_accel_error()
-                mpu.accel_avg = accel_avg
-                print('Recalibrated accel error:', accel_avg)
-
-            this_time = time.time()
-            frequency = 1 / (this_time - old_time)
-            old_time = this_time
-
             data = mpu.get_angle()
 
             comp_angle = int(data[0])
@@ -75,6 +61,31 @@ if __name__ == '__main__':
 
             control = pid(comp_angle)
 
+            # setting motor speed
+            abs_control = abs(control)
+            abs_min_control = MIN_DUTY_CYCLE if abs_control < MIN_DUTY_CYCLE and abs_control > 0 else abs_control
+
+            if DEBUG:
+                print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
+                      frequency, 'control:', abs_min_control)
+
+            # sending telemetry data to server
+            if TELEMTRY_TRANSMISSION:
+                try:
+                    inou.post_telemetry(SERVER_URL, time.time(),
+                                        comp_angle, gyro_angle, accel_angle, abs_min_control, frequency)
+                except:
+                    print('Couldn`t connect to server..')
+
+            stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
+            if not stability_switch:
+                motor_driver.stop_both()
+                time.sleep(0.01)
+                accel_avg = mpu.get_accel_error()
+                mpu.accel_avg = accel_avg
+                print('Recalibrated accel error:', accel_avg)
+                continue
+
             # setting direction
             if control > SETPOINT:
                 motor_driver.change_left_direction(True)
@@ -82,24 +93,9 @@ if __name__ == '__main__':
             else:
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
-            # setting motor speed
-            control = abs(control)
-            control = MIN_DUTY_CYCLE if control < MIN_DUTY_CYCLE and control > 0 else control
 
-            if DEBUG:
-                print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
-                      frequency, 'control:', control)
-
-            # sending telemetry data to server
-            if TELEMTRY_TRANSMISSION:
-                try:
-                    inou.post_telemetry(SERVER_URL, time.time(),
-                                        comp_angle, gyro_angle, accel_angle, control, frequency)
-                except:
-                    print('Couldn`t connect to server..')
-
-            motor_driver.change_right_duty_cycle(abs(control))
-            motor_driver.change_left_duty_cycle(abs(control))
+            motor_driver.change_right_duty_cycle(abs_min_control)
+            motor_driver.change_left_duty_cycle(abs_min_control)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
