@@ -15,7 +15,7 @@ class transmittor:
     def post_telemetry(self):
         try:
             requests.post(self.server_url,
-                          json=json.dumps(self.telemetry_list))
+                          json=self.telemetry_list)
         except Exception as e:
             print(e)
 
