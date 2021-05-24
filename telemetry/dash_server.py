@@ -30,13 +30,9 @@ def telemetry():
     global telemetry_list
     data = json.loads(request.data)
 
-    print(type(data))
-    print('DATA', data)
-
     telemetry_list += data
-    if len(telemetry_list) > 20:
-        telemetry_list.pop(0)
-    print('RECEIVED:', telemetry_list)
+    if len(telemetry_list) > 3000:
+        telemetry_list = telemetry_list[-3000:]
     print('Received data.')
     return "200"
 
@@ -47,15 +43,23 @@ def telemetry():
 )
 def update_graph_scatter(n):
 
-    data = plotly.graph_objs.Scatter(
-        x=[i['timestampms'] for i in telemetry_list],
-        y=[i['comp_angle'] for i in telemetry_list],
+    time_col = [i['time'] for i in telemetry_list]
+    comp_angle_col = [i['comp_angle'] for i in telemetry_list]
+
+    data = plotly.graph_objs.Line(
+        x=time_col,
+        y=comp_angle_col,
         name='Scatter',
-        mode='lines+markers'
+        mode='lines'
     )
 
+    min_x = min(time_col) if len(time_col) > 0 else 0
+    max_x = max(time_col) if len(time_col) > 0 else 10
+    min_y = min(comp_angle_col) if len(comp_angle_col) > 0 else -50
+    max_y = max(comp_angle_col) if len(comp_angle_col) > 0 else 50
+
     return {'data': [data],
-            'layout': go.Layout(xaxis=dict(range=[min([i['timestampms'] for i in telemetry_list]), max([i['timestampms'] for i in telemetry_list])]), yaxis=dict(range=[min([i['comp_angle'] for i in telemetry_list]), max([i['comp_angle'] for i in telemetry_list])]),)}
+            'layout': go.Layout(xaxis=dict(range=[min_x, max_x]), yaxis=dict(range=[min_y, max_y]),)}
 
 
 if __name__ == '__main__':
