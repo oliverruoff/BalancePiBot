@@ -71,11 +71,8 @@ if __name__ == '__main__':
 
             # sending telemetry data to server
             if TELEMTRY_TRANSMISSION:
-                try:
-                    inou.post_telemetry(SERVER_URL, time.time(),
-                                        comp_angle, gyro_angle, accel_angle, abs_min_control, frequency)
-                except:
-                    print('Couldn`t connect to server..')
+                inou.post_telemetry(SERVER_URL, time.time(),
+                                    comp_angle, gyro_angle, accel_angle, abs_min_control, frequency)
 
             stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
             if not stability_switch:
