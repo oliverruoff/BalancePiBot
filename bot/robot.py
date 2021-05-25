@@ -93,8 +93,8 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
-            motor_driver.change_right_duty_cycle(abs_min_control)
-            motor_driver.change_left_duty_cycle(abs_min_control)
+            # motor_driver.change_right_duty_cycle(abs_min_control)
+            # motor_driver.change_left_duty_cycle(abs_min_control)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
