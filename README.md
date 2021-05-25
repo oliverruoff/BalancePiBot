@@ -3,7 +3,19 @@ A balancing robot build around a Raspberry Pi 3.
 
 ![BalanceBot](docs/bb.png)
 
-# Usage
+## Telemetry Viewer
+
+- Featuring telemetry transmission + viewing 
+- Telemetry send:
+    - Angle from complementary filter
+    - Angle from Gyroscope
+    - Angle from Accelerometer
+    - Control from PID algorithm
+    - Frequency
+
+![telemetry](docs/telemetry.png)
+
+## Usage
 
 - Install packages in `requirements.txt`
 - Check in `robot.py` variables at the top and see if you want to change something there
