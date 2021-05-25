@@ -1,11 +1,13 @@
+from time import time
+
+from pandas.core.dtypes.dtypes import PeriodDtype
 import dash
 from dash.dependencies import Output, Input
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly
-import random
+import plotly.express as px
 import plotly.graph_objs as go
-from collections import deque
+import plotly
 import json
 from flask import request
 
@@ -43,23 +45,46 @@ def telemetry():
 )
 def update_graph_scatter(n):
 
-    time_col = [i['time'] for i in telemetry_list]
-    comp_angle_col = [i['comp_angle'] for i in telemetry_list]
+    prepared_data = []
+    for line in telemetry_list:
+        prepared_data.append({
+            'time': line['time'],
+            'value': line['comp_angle'],
+            'feature': 'comp_angle'
+        })
+        prepared_data.append({
+            'time': line['time'],
+            'value': line['control'],
+            'feature': 'control'
+        })
+        prepared_data.append({
+            'time': line['time'],
+            'value': line['gyro_angle'],
+            'feature': 'gyro'
+        })
+        prepared_data.append({
+            'time': line['time'],
+            'value': line['accel_angle'],
+            'feature': 'accel_angle'
+        })
+        prepared_data.append({
+            'time': line['time'],
+            'value': line['frequency'],
+            'feature': 'frequency'
+        })
 
-    data = plotly.graph_objs.Line(
-        x=time_col,
-        y=comp_angle_col,
-        name='Scatter',
-        mode='lines'
-    )
+    time_col = [i['time'] for i in prepared_data]
+    val_col = [i['value'] for i in prepared_data]
 
     min_x = min(time_col) if len(time_col) > 0 else 0
     max_x = max(time_col) if len(time_col) > 0 else 10
-    min_y = min(comp_angle_col) if len(comp_angle_col) > 0 else -50
-    max_y = max(comp_angle_col) if len(comp_angle_col) > 0 else 50
+    min_y = min(val_col) if len(val_col) > 0 else -50
+    max_y = max(val_col) if len(val_col) > 0 else 50
 
-    return {'data': [data],
-            'layout': go.Layout(xaxis=dict(range=[min_x, max_x]), yaxis=dict(range=[min_y, max_y]),)}
+    data = px.line(prepared_data, x="time", y="value", color="feature",
+                   title='FALL-E Telementry Data', range_x=[min_x, max_x], range_y=[min_y, max_y])
+
+    return data
 
 
 if __name__ == '__main__':

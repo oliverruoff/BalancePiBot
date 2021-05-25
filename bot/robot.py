@@ -74,7 +74,7 @@ if __name__ == '__main__':
             # sending telemetry data to server
             if TELEMTRY_TRANSMISSION:
                 transmit.collect_telemetry(
-                    comp_angle, gyro_angle, accel_angle, abs_min_control, frequency)
+                    comp_angle, gyro_angle, accel_angle, control, frequency)
 
             stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
             if not stability_switch:
@@ -93,8 +93,8 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
-            # motor_driver.change_right_duty_cycle(abs_min_control)
-            # motor_driver.change_left_duty_cycle(abs_min_control)
+            motor_driver.change_right_duty_cycle(abs_min_control)
+            motor_driver.change_left_duty_cycle(abs_min_control)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
