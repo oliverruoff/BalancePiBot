@@ -104,9 +104,12 @@ class mpu6050:
         return angle
 
     def get_full_accel_data(self):
-        x = self.read_raw_data(ACCEL_XOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
-        y = self.read_raw_data(ACCEL_YOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
-        z = self.read_raw_data(ACCEL_ZOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+        try:
+            x = self.read_raw_data(ACCEL_XOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+            y = self.read_raw_data(ACCEL_YOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+            z = self.read_raw_data(ACCEL_ZOUT_H)/MPU_SENSOR_ACCEL_CONSTANT
+        except:
+            return self.get_full_accel_data()
         return (x, y, z)
 
     def dotproduct(self, v1, v2):

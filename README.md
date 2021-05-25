@@ -1,4 +1,4 @@
-# BalancePiBot - Aka FALL-E
+# BalancePiBot - aka FALL-E
 A balancing robot build around a Raspberry Pi 3.
 
 ![BalanceBot](docs/bb.png)
