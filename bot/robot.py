@@ -10,10 +10,12 @@ from transmission import transmittor
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # URL to send telemtry data to
+TELEMTRY_TRANSMISSION = True
+TELEMETRY_BATCH_TIME_SECONDS = 1
 SERVER_URL = 'http://192.168.178.32:5000/telemetry'
 
 DEBUG = True
-TELEMTRY_TRANSMISSION = True
+
 
 # If robot center weight is not centered
 SETPOINT = -1
@@ -50,7 +52,8 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
-    transmit = transmittor.transmittor(SERVER_URL, 1)
+    transmit = transmittor.transmittor(
+        SERVER_URL, TELEMETRY_BATCH_TIME_SECONDS)
 
     try:
         while(True):
