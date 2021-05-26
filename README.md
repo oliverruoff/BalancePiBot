@@ -6,7 +6,7 @@ A balancing robot build around a Raspberry Pi 3.
 ## Telemetry Viewer
 
 - Featuring telemetry transmission + viewing 
-- Telemetry send:
+- Telemetry sent:
     - Angle from complementary filter
     - Angle from Gyroscope
     - Angle from Accelerometer
