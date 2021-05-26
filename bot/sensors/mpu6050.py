@@ -119,7 +119,12 @@ class mpu6050:
         return math.sqrt(self.dotproduct(v, v))
 
     def angle(self, v1, v2):
-        return math.acos(self.dotproduct(v1, v2) / (self.length(v1) * self.length(v2)))
+        try:
+            result = math.acos(self.dotproduct(v1, v2) /
+                               (self.length(v1) * self.length(v2)))
+        except:
+            return 0
+        return result
 
     def get_accel_error(self, samples=100):
         return sum([math.degrees(self.angle(self.get_full_accel_data(), (1, 0, 0))) for i in range(samples)])/samples
