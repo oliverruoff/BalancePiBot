@@ -18,15 +18,15 @@ DEBUG = True
 
 
 # If robot center weight is not centered
-SETPOINT = -0.7
+SETPOINT = -0.8
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 0
 
 # For PID controller
-Kp = 50  # 14
-Ki = 0  # 200
-Kd = 0.1  # 0.6
+Kp = 50  # 50
+Ki = 0  # 0
+Kd = 0.1  # 0.3
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 GPIO_MODE = GPIO.BCM
