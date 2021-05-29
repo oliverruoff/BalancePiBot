@@ -2,7 +2,7 @@ from time import time
 
 from pandas.core.dtypes.dtypes import PeriodDtype
 import dash
-from dash.dependencies import Output, Input
+from dash.dependencies import Output, Input, State
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
@@ -12,6 +12,11 @@ from flask import request
 
 # number of data rows shown
 MOVING_WINDOW_SIZE = 3000
+
+# PID values
+Kp = 50
+Ki = 0
+Kd = 0.1
 
 telemetry_list = []
 
@@ -26,8 +31,37 @@ app.layout = html.Div(
             interval=1000,
             n_intervals=0
         ),
+        dcc.Input(id="Kp", type="number", placeholder="50"),
+        dcc.Input(id="Ki", type="number", placeholder="0"),
+        dcc.Input(id="Kd", type="number", placeholder="0.1"),
+        html.Button('Submit', id='submit-val', n_clicks=0),
+        html.Div(id='container-button-basic',
+                 children='Enter a value and press submit')
     ]
 )
+
+
+@app.callback(
+    Output('container-button-basic', 'children'),
+    [Input('submit-val', 'n_clicks')],
+    [State("Kp", "value"),
+     State("Ki", "value"),
+     State("Kd", "value")]
+)
+def number_render(n_clicks, P, I, D):
+    print('Setting new PID values')
+    global Kp
+    global Ki
+    global Kd
+    Kp = P
+    Ki = I
+    Kd = D
+
+
+@app.server.route("/pid", methods=["GET"])
+def get_pid_values():
+    pid_dict = {'Kp': Kp, 'Ki': Ki, 'Kd': Kd}
+    return json.dumps(pid_dict)
 
 
 @app.server.route("/telemetry", methods=["POST"])
@@ -47,7 +81,8 @@ def telemetry():
     [Input('graph-update', 'n_intervals')]
 )
 def update_graph_telemetry_frequency(n):
-
+    if len(telemetry_list) == 0:
+        return "Data Missing"
     prepared_data = []
     for line in telemetry_list:
         if line['frequency'] > 1000:
@@ -77,7 +112,8 @@ def update_graph_telemetry_frequency(n):
     [Input('graph-update', 'n_intervals')]
 )
 def update_graph_telemetry_stabilisation(n):
-
+    if len(telemetry_list) == 0:
+        return "Data Missing"
     prepared_data = []
     for line in telemetry_list:
         prepared_data.append({
