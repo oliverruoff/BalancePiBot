@@ -62,8 +62,11 @@ class mpu6050:
 
     def read_raw_data(self, addr):
         # Accelero and Gyro value are 16-bit
-        high = bus.read_byte_data(Device_Address, addr)
-        low = bus.read_byte_data(Device_Address, addr+1)
+        try:
+            high = bus.read_byte_data(Device_Address, addr)
+            low = bus.read_byte_data(Device_Address, addr+1)
+        except:
+            return self.read_raw_data(addr)
 
         # concatenate higher and lower value
         value = ((high << 8) | low)

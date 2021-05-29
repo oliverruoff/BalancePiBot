@@ -18,7 +18,7 @@ DEBUG = True
 
 
 # If robot center weight is not centered
-SETPOINT = -0.8
+SETPOINT = 0
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 0
