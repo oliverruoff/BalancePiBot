@@ -93,7 +93,7 @@ if __name__ == '__main__':
                 # Every second sync with telemetry server
                 if (now - last_telemetry_server_sync) >= 1:
                     print('Syncing with telemetry server')
-                    new_settings = transmittor.sync_with_telemetry_server(
+                    new_settings = transmit.sync_with_telemetry_server(
                         'sync')
                     last_telemetry_server_sync = now
                     if new_settings != settings:
