@@ -12,7 +12,7 @@ from transmission import transmittor
 # URL to send telemtry data to
 TELEMTRY_TRANSMISSION = True
 TELEMETRY_BATCH_TIME_SECONDS = 1
-SERVER_URL = 'http://192.168.178.32:5000/telemetry'
+SERVER_URL = 'http://192.168.178.32:5000'
 
 DEBUG = True
 

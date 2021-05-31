@@ -12,9 +12,9 @@ class transmittor:
         self.last_transmission_time = time.time()
         self.telemetry_list = []
 
-    def post_telemetry(self):
+    def post_telemetry(self, endpoint='/telemetry'):
         try:
-            requests.post(self.server_url,
+            requests.post('/'.join([self.server_url, endpoint]),
                           json=self.telemetry_list)
         except Exception as e:
             print(e)
@@ -37,7 +37,7 @@ class transmittor:
             self.last_transmission_time = now
             self.telemetry_list = []
 
-    def sync_with_telemetry_server(self, endpoint):
+    def sync_with_telemetry_server(self, endpoint='sync'):
         resp = requests.get(url='/'.join([self.server_url, endpoint]))
         jsn = json.loads(resp.content)
         return jsn

@@ -19,7 +19,7 @@ def post_telemetry(server_url, timestampms, comp_angle, gyro_angle, accel_angle,
 
 
 def sync_with_telemetry_server_test():
-    resp = requests.get('http://192.168.178.32:5000/sync')
+    resp = requests.get(url='http://192.168.178.32:5000/sync')
     jsn = json.loads(resp.content)
     return jsn
 
