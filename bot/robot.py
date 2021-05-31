@@ -53,7 +53,7 @@ if __name__ == '__main__':
         enb_pin=11,
         gpio_mode=GPIO_MODE)
 
-    pid = PID(settings.Kp, settings.Ki, settings.Kd, setpoint=SETPOINT,
+    pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=SETPOINT,
               sample_time=0.005, output_limits=(-100, 100))
 
     mpu = mpu6050.mpu6050()
