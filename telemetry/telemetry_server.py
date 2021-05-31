@@ -23,9 +23,9 @@ telemetry_list = []
 app = dash.Dash(__name__)
 
 app.layout = html.Div(
-    [dcc.Input(id="Kp", type="number", value="50"),
-        dcc.Input(id="Ki", type="number", value="0"),
-        dcc.Input(id="Kd", type="number", value="0.1"),
+    [dcc.Input(id="Kp", type="number", value=50),
+        dcc.Input(id="Ki", type="number", value=0),
+        dcc.Input(id="Kd", type="number", value=0.1),
         html.Button('Submit', id='submit-val', n_clicks=0),
         dcc.Graph(id='frequency-graph', animate=True),
         dcc.Graph(id='live-graph', animate=True),
