@@ -39,6 +39,5 @@ class transmittor:
 
     def sync_with_telemetry_server(self, endpoint):
         resp = requests.get(url='/'.join([self.server_url, endpoint]))
-        jsn = json.loads(resp.json)
-        print(jsn)
+        jsn = json.loads(resp.content)
         return jsn

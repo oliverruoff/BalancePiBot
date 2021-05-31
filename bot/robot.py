@@ -97,6 +97,8 @@ if __name__ == '__main__':
                         'sync')
                     last_telemetry_server_sync = now
                     if new_settings != settings:
+                        print(
+                            'Received new settings from telemetry server:', new_settings)
                         settings = new_settings
                         pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=SETPOINT,
                                   sample_time=0.005, output_limits=(-100, 100))
