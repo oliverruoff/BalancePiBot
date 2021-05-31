@@ -98,7 +98,7 @@ if __name__ == '__main__':
                     last_telemetry_server_sync = now
                     if new_settings != settings:
                         settings = new_settings
-                        pid = PID(settings.Kp, settings.Ki, settings.Kd, setpoint=SETPOINT,
+                        pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=SETPOINT,
                                   sample_time=0.005, output_limits=(-100, 100))
 
             # Checking if switch is ON or OFF to de/activate motors
