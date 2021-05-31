@@ -28,15 +28,21 @@ Kp = 50  # 50
 Ki = 0  # 0
 Kd = 0.1  # 0.3
 
+STABILITY_SWITCH_PIN = 17
+
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
+
 GPIO_MODE = GPIO.BCM
 GPIO.setmode(GPIO_MODE)
-
-# STABILITY SWITCH
-STABILITY_SWITCH_PIN = 17
 GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 
 if __name__ == '__main__':
+
+    settings = {
+        'Kp': Kp,
+        'Ki': Ki,
+        'Kd': Kd
+    }
 
     motor_driver = l298n.l298n(
         in1_pin=19,
@@ -47,7 +53,7 @@ if __name__ == '__main__':
         enb_pin=11,
         gpio_mode=GPIO_MODE)
 
-    pid = PID(Kp, Ki, Kd, setpoint=SETPOINT,
+    pid = PID(settings.Kp, settings.Ki, settings.Kd, setpoint=SETPOINT,
               sample_time=0.005, output_limits=(-100, 100))
 
     mpu = mpu6050.mpu6050()
@@ -55,18 +61,23 @@ if __name__ == '__main__':
     transmit = transmittor.transmittor(
         SERVER_URL, TELEMETRY_BATCH_TIME_SECONDS)
 
+    last_telemetry_server_sync = 0
+
     try:
         while(True):
-            data = mpu.get_angle()
+            now = time.time()
 
+            # Get angle from mpu sensor
+            data = mpu.get_angle()
             comp_angle = int(data[0])
             gyro_angle = int(data[1])
             accel_angle = int(data[2])
             frequency = int(data[3])
 
+            # Use pid to get motor control
             control = pid(comp_angle)
 
-            # setting motor speed
+            # Increase control in case it's lower than MIN_DUTY_CYCLE
             abs_control = abs(control)
             abs_min_control = MIN_DUTY_CYCLE if abs_control < MIN_DUTY_CYCLE and abs_control > 0 else abs_control
 
@@ -74,11 +85,23 @@ if __name__ == '__main__':
                 print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
                       frequency, 'control:', abs_min_control)
 
-            # sending telemetry data to server
+            # Telemetry server interaction
             if TELEMTRY_TRANSMISSION:
+                # Sending telemetry data to server
                 transmit.collect_telemetry(
                     comp_angle, gyro_angle, accel_angle, control, frequency)
+                # Every second sync with telemetry server
+                if (now - last_telemetry_server_sync) >= 1:
+                    print('Syncing with telemetry server')
+                    new_settings = transmittor.sync_with_telemetry_server(
+                        'sync')
+                    last_telemetry_server_sync = now
+                    if new_settings != settings:
+                        settings = new_settings
+                        pid = PID(settings.Kp, settings.Ki, settings.Kd, setpoint=SETPOINT,
+                                  sample_time=0.005, output_limits=(-100, 100))
 
+            # Checking if switch is ON or OFF to de/activate motors
             stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
             if not stability_switch:
                 motor_driver.stop_both()
@@ -96,6 +119,7 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
+            # Change motor speed
             motor_driver.change_right_duty_cycle(abs_min_control)
             motor_driver.change_left_duty_cycle(abs_min_control)
 

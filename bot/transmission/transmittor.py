@@ -36,3 +36,7 @@ class transmittor:
             t1.start()
             self.last_transmission_time = now
             self.telemetry_list = []
+
+    def sync_with_telemetry_server(self, endpoint):
+        resp = requests.get(url='/'.join([self.server_url, endpoint]))
+        return resp.json()

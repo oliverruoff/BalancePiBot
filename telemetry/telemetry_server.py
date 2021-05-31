@@ -23,18 +23,17 @@ telemetry_list = []
 app = dash.Dash(__name__)
 
 app.layout = html.Div(
-    [
+    [dcc.Input(id="Kp", type="number", placeholder="50"),
+        dcc.Input(id="Ki", type="number", placeholder="0"),
+        dcc.Input(id="Kd", type="number", placeholder="0.1"),
+        html.Button('Submit', id='submit-val', n_clicks=0),
         dcc.Graph(id='frequency-graph', animate=True),
         dcc.Graph(id='live-graph', animate=True),
         dcc.Interval(
             id='graph-update',
             interval=1000,
             n_intervals=0
-        ),
-        dcc.Input(id="Kp", type="number", placeholder="50"),
-        dcc.Input(id="Ki", type="number", placeholder="0"),
-        dcc.Input(id="Kd", type="number", placeholder="0.1"),
-        html.Button('Submit', id='submit-val', n_clicks=0),
+    ),
         html.Div(id='container-button-basic',
                  children='Enter a value and press submit')
     ]
@@ -58,7 +57,7 @@ def number_render(n_clicks, P, I, D):
     Kd = D
 
 
-@app.server.route("/pid", methods=["GET"])
+@app.server.route("/sync", methods=["GET"])
 def get_pid_values():
     pid_dict = {'Kp': Kp, 'Ki': Ki, 'Kd': Kd}
     return json.dumps(pid_dict)
