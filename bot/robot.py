@@ -77,8 +77,8 @@ if __name__ == '__main__':
             accel_angle = int(data[2])
             frequency = int(data[3])
 
-            print('GYRO X:', mpu.get_new_gyro_angle(
-                'x', 0, gyro_drift=mpu.gyro_x_drift, raw=True))
+            print('GYRO Z:', mpu.get_new_gyro_angle(
+                'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True))
 
             # Use pid to get motor control
             control = pid(comp_angle)
