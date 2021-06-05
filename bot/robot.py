@@ -18,7 +18,7 @@ DEBUG = True
 
 
 # If robot center weight is not centered
-SETPOINT = 0
+setpoint = 0
 
 # If motors need some specify duty cycle to spin
 MIN_DUTY_CYCLE = 0
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         enb_pin=11,
         gpio_mode=GPIO_MODE)
 
-    pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=SETPOINT,
+    pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=setpoint,
               sample_time=0.005, output_limits=(-100, 100))
 
     mpu = mpu6050.mpu6050()
@@ -102,7 +102,8 @@ if __name__ == '__main__':
                         print(
                             'Received new settings from telemetry server:', new_settings)
                         settings = new_settings
-                        pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=SETPOINT,
+                        setpoint = settings['Setpoint']
+                        pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=setpoint,
                                   sample_time=0.005, output_limits=(-100, 100))
 
             # Checking if switch is ON or OFF to de/activate motors
@@ -116,7 +117,7 @@ if __name__ == '__main__':
                 continue
 
             # setting direction
-            if control > SETPOINT:
+            if control > setpoint:
                 motor_driver.change_left_direction(True)
                 motor_driver.change_right_direction(True)
             else:

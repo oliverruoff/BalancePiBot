@@ -11,7 +11,7 @@ class transmittor:
         self.min_transmission_time_seconds = min_transmission_time_seconds
         self.last_transmission_time = time.time()
         self.telemetry_list = []
-        self.config_dict = {"Kp": 50, "Ki": 0, "Kd": 0.1}
+        self.config_dict = {"Kp": 50, "Ki": 0, "Kd": 0.1, "Setpoint": 0}
 
     def get_configs(self):
         return self.config_dict

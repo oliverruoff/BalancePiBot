@@ -23,6 +23,7 @@ MOVING_WINDOW_SIZE = NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED * \
 Kp = 50
 Ki = 0
 Kd = 0.1
+Setpoint = 0
 
 telemetry_df = utils.generate_empty_feature_df_with_size(
     NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED)
@@ -33,6 +34,7 @@ app.layout = html.Div(
     [dcc.Input(id="Kp", type="number", value=50),
         dcc.Input(id="Ki", type="number", value=0),
         dcc.Input(id="Kd", type="number", value=0.1),
+        dcc.Input(id="Setpoint", type="number", value=0),
         html.Button('Submit', id='submit-val', n_clicks=0),
         dcc.Graph(id='frequency-graph', animate=True),
         dcc.Graph(id='live-graph', animate=True),
@@ -52,21 +54,24 @@ app.layout = html.Div(
     [Input('submit-val', 'n_clicks')],
     [State("Kp", "value"),
      State("Ki", "value"),
-     State("Kd", "value")]
+     State("Kd", "value"),
+     State("Setpoint", "value")]
 )
-def update_pid(n_clicks, P, I, D):
+def update_pid(n_clicks, P, I, D, SP):
     print('Setting new PID values')
     global Kp
     global Ki
     global Kd
+    global Setpoint
     Kp = P
     Ki = I
     Kd = D
+    Setpoint = SP
 
 
 @app.server.route("/sync", methods=["GET"])
 def get_pid_values():
-    pid_dict = {'Kp': Kp, 'Ki': Ki, 'Kd': Kd}
+    pid_dict = {'Kp': Kp, 'Ki': Ki, 'Kd': Kd, 'Setpoint': Setpoint}
     return json.dumps(pid_dict)
 
 
