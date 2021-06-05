@@ -28,8 +28,8 @@ class l298n:
         self.right_duty_cycle = 0
         self.left_motor_direction = True
         self.right_motor_direction = True
-        self.left_motor_offset = 0
-        self.right_motor_offset = 0
+        self.left_motor_factor = 1
+        self.left_motor_factor = 1
 
         # initializing pins
         GPIO.setmode(gpio_mode)

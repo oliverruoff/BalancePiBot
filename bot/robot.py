@@ -82,11 +82,11 @@ if __name__ == '__main__':
             gyro_z = mpu.get_new_gyro_angle(
                 'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
             if gyro_z > 0:
-                motor_driver.left_motor_offset -= 2
-                motor_driver.right_motor_offset += 2
+                motor_driver.left_motor_factor -= 0.1
+                motor_driver.right_motor_factor += 0.1
             else:
-                motor_driver.left_motor_offset += 2
-                motor_driver.right_motor_offset -= 2
+                motor_driver.left_motor_factor += 0.1
+                motor_driver.right_motor_factor -= 0.1
 
             # Use pid to get motor control
             control = pid(comp_angle)
@@ -98,8 +98,8 @@ if __name__ == '__main__':
             if DEBUG:
                 print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
                       frequency, 'control:', abs_min_control)
-                print('L. Motor Offset: ', motor_driver.left_motor_offset,
-                      '| R. Motor Offset:', motor_driver.right_motor_offset)
+                print('L. Motor Factor: ', motor_driver.left_motor_factor,
+                      '| R. Motor Factor:', motor_driver.right_motor_factor)
 
             # Telemetry server interaction
             if TELEMTRY_TRANSMISSION:
@@ -139,9 +139,9 @@ if __name__ == '__main__':
 
             # Change motor speed
             motor_driver.change_right_duty_cycle(
-                abs_min_control+motor_driver.right_motor_offset)
+                abs_min_control*motor_driver.right_motor_factor)
             motor_driver.change_left_duty_cycle(
-                abs_min_control+motor_driver.left_motor_offset)
+                abs_min_control*motor_driver.left_motor_factor)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
