@@ -90,13 +90,14 @@ def update_graph_telemetry_frequency(n):
     if len(frequency_df) == 0:
         return "Data Missing"
 
+    frequency_df = frequency_df.tail(
+        NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED*(AVERAGE_SENSOR_FREQUENCY_HERTZ-20))
+
     # Getting boundings of graph
     min_x = min(frequency_df.time) if len(frequency_df.time) > 0 else 0
     max_x = max(frequency_df.time) if len(frequency_df.time) > 0 else 10
     min_y = min(frequency_df.value) if len(frequency_df.value) > 0 else -50
     max_y = max(frequency_df.value) if len(frequency_df.value) > 0 else 50
-
-    print('Len freq df:', len(frequency_df))
 
     data = px.line(frequency_df, x="time", y="value", color="feature",
                    title='FALL-E Telementry Data - Frequency', range_x=[min_x, max_x], range_y=[min_y, max_y])
@@ -118,8 +119,6 @@ def update_graph_telemetry_stabilisation(n):
     max_x = max(feature_df.time) if len(feature_df.time) > 0 else 10
     min_y = min(feature_df.value) if len(feature_df.value) > 0 else -50
     max_y = max(feature_df.value) if len(feature_df.value) > 0 else 50
-
-    print('LEN feature_DF:', len(feature_df))
 
     data = px.line(feature_df, x="time", y="value", color="feature",
                    title='FALL-E Telementry Data - Stabilisation', range_x=[min_x, max_x], range_y=[min_y, max_y])
