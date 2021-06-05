@@ -88,8 +88,6 @@ if __name__ == '__main__':
             if DEBUG:
                 print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
                       frequency, 'control:', abs_min_control)
-                print('L. Motor Factor: ', motor_driver.left_motor_factor,
-                      '| R. Motor Factor:', motor_driver.right_motor_factor)
 
             # Telemetry server interaction
             if TELEMTRY_TRANSMISSION:
