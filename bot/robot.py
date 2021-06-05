@@ -141,11 +141,17 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
+            left_motor_control = abs_min_control*motor_driver.left_motor_factor
+            right_motor_control = abs_min_control*motor_driver.right_motor_factor
+
+            print('L_Control:', left_motor_control,
+                  '| R_Control:', right_motor_control)
+
             # Change motor speed
-            motor_driver.change_right_duty_cycle(
-                abs_min_control*motor_driver.right_motor_factor)
             motor_driver.change_left_duty_cycle(
-                abs_min_control*motor_driver.left_motor_factor)
+                left_motor_control)
+            motor_driver.change_right_duty_cycle(
+                right_motor_control)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
