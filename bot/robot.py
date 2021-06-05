@@ -83,6 +83,7 @@ if __name__ == '__main__':
                 'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
 
             print('GYRO_Z:', gyro_z)
+            print('GYRO_Z_RAW:', mpu.read_raw_data(0x47))
 
             if gyro_z > 0:
                 motor_driver.left_motor_factor = 1 - gyro_z
