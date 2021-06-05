@@ -36,6 +36,7 @@ GPIO_MODE = GPIO.BCM
 GPIO.setmode(GPIO_MODE)
 GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 
+
 if __name__ == '__main__':
 
     settings = {
@@ -77,8 +78,15 @@ if __name__ == '__main__':
             accel_angle = int(data[2])
             frequency = int(data[3])
 
-            print('GYRO Z:', mpu.get_new_gyro_angle(
-                'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True))
+            # for making sure that robot does not turn while balancing
+            gyro_z = mpu.get_new_gyro_angle(
+                'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
+            if gyro_z > 0:
+                motor_driver.left_motor_offset -= 2
+                motor_driver.right_motor_offset += 2
+            else:
+                motor_driver.left_motor_offset += 2
+                motor_driver.right_motor_offset -= 2
 
             # Use pid to get motor control
             control = pid(comp_angle)
@@ -90,6 +98,8 @@ if __name__ == '__main__':
             if DEBUG:
                 print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
                       frequency, 'control:', abs_min_control)
+                print('L. Motor Offset: ', motor_driver.left_motor_offset,
+                      '| R. Motor Offset:', motor_driver.right_motor_offset)
 
             # Telemetry server interaction
             if TELEMTRY_TRANSMISSION:
@@ -128,8 +138,10 @@ if __name__ == '__main__':
                 motor_driver.change_right_direction(False)
 
             # Change motor speed
-            motor_driver.change_right_duty_cycle(abs_min_control)
-            motor_driver.change_left_duty_cycle(abs_min_control)
+            motor_driver.change_right_duty_cycle(
+                abs_min_control+motor_driver.right_motor_offset)
+            motor_driver.change_left_duty_cycle(
+                abs_min_control+motor_driver.left_motor_offset)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()

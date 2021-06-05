@@ -28,6 +28,8 @@ class l298n:
         self.right_duty_cycle = 0
         self.left_motor_direction = True
         self.right_motor_direction = True
+        self.left_motor_offset = 0
+        self.right_motor_offset = 0
 
         # initializing pins
         GPIO.setmode(gpio_mode)
@@ -56,10 +58,18 @@ class l298n:
         p_b.ChangeDutyCycle(self.right_duty_cycle)
 
     def change_left_duty_cycle(self, duty_cycle):
+        if duty_cycle > 100:
+            duty_cycle = 100
+        elif duty_cycle < 0:
+            duty_cycle = 0
         self.left_duty_cycle = duty_cycle
         self.p_a.ChangeDutyCycle(duty_cycle)
 
     def change_right_duty_cycle(self, duty_cycle):
+        if duty_cycle > 100:
+            duty_cycle = 100
+        elif duty_cycle < 0:
+            duty_cycle = 0
         self.right_duty_cycle = duty_cycle
         self.p_b.ChangeDutyCycle(duty_cycle)
 
