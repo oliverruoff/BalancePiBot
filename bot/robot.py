@@ -78,22 +78,23 @@ if __name__ == '__main__':
             accel_angle = int(data[2])
             frequency = int(data[3])
 
-            # for making sure that robot does not turn while balancing
-            gyro_z = mpu.get_new_gyro_angle(
-                'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
-
-            print('GYRO_Z:', gyro_z)
-            print('GYRO_Z_RAW:', mpu.read_raw_data(0x47))
-
-            if gyro_z > 0:
-                motor_driver.left_motor_factor = 1 - (gyro_z/10)
-                motor_driver.right_motor_factor = 1 + (gyro_z/10)
-            else:
-                motor_driver.left_motor_factor = 1 + (gyro_z/10)
-                motor_driver.right_motor_factor = 1 - (gyro_z/10)
-
             # Use pid to get motor control
             control = pid(comp_angle)
+
+            if control != 0:
+                # for making sure that robot does not turn while balancing
+                gyro_z = mpu.get_new_gyro_angle(
+                    'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
+
+                print('GYRO_Z:', gyro_z)
+                print('GYRO_Z_RAW:', mpu.read_raw_data(0x47))
+
+                if gyro_z > 0:
+                    motor_driver.left_motor_factor = 1 - (gyro_z/100)
+                    motor_driver.right_motor_factor = 1 + (gyro_z/100)
+                else:
+                    motor_driver.left_motor_factor = 1 + (gyro_z/100)
+                    motor_driver.right_motor_factor = 1 - (gyro_z/100)
 
             # Increase control in case it's lower than MIN_DUTY_CYCLE
             abs_control = abs(control)
