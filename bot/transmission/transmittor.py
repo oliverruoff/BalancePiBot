@@ -1,4 +1,3 @@
-from telemetry.telemetry_send_test import sync_with_telemetry_server_test
 import time
 import requests
 import json
@@ -52,4 +51,4 @@ class transmittor:
         jsn = json.loads(resp.content)
         self.config_dict = jsn
         time.sleep(1)
-        self.sync_with_telemetry_server()
+        # self.sync_with_telemetry_server()
