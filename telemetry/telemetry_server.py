@@ -1,24 +1,31 @@
 from time import time
 
+import pandas as pd
 from pandas.core.dtypes.dtypes import PeriodDtype
 import dash
 from dash.dependencies import Output, Input, State
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
-import plotly.graph_objs as go
 import json
 from flask import request
 
+import utils
+
 # number of data rows shown
-MOVING_WINDOW_SIZE = 3000
+NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED = 20
+FEATURES_TRANSMITTED = 5
+AVERAGE_SENSOR_FREQUENCY_HERTZ = 170
+MOVING_WINDOW_SIZE = NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED * \
+    FEATURES_TRANSMITTED * AVERAGE_SENSOR_FREQUENCY_HERTZ
 
 # PID values
 Kp = 50
 Ki = 0
 Kd = 0.1
 
-telemetry_list = []
+telemetry_df = utils.generate_empty_feature_df_with_size(
+    NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED)
 
 app = dash.Dash(__name__)
 
@@ -47,7 +54,7 @@ app.layout = html.Div(
      State("Ki", "value"),
      State("Kd", "value")]
 )
-def number_render(n_clicks, P, I, D):
+def update_pid(n_clicks, P, I, D):
     print('Setting new PID values')
     global Kp
     global Ki
@@ -65,13 +72,11 @@ def get_pid_values():
 
 @app.server.route("/telemetry", methods=["POST"])
 def telemetry():
-    global telemetry_list
+    global telemetry_df
     data = json.loads(request.data)
-
-    telemetry_list += data
-    if len(telemetry_list) > MOVING_WINDOW_SIZE:
-        telemetry_list = telemetry_list[-MOVING_WINDOW_SIZE:]
-    print('Received data.')
+    telemetry_df = utils.prepare_input_data(
+        telemetry_df, data, NUMBER_OF_LAST_N_SECONDS_TO_BE_DISPLAYED,
+        MOVING_WINDOW_SIZE)
     return "200"
 
 
@@ -80,29 +85,21 @@ def telemetry():
     [Input('graph-update', 'n_intervals')]
 )
 def update_graph_telemetry_frequency(n):
-    if len(telemetry_list) == 0:
+    frequency_df = telemetry_df.loc[telemetry_df['feature'] == 'frequency']
+
+    if len(frequency_df) == 0:
         return "Data Missing"
-    prepared_data = []
-    for line in telemetry_list:
-        if line['frequency'] > 1000:
-            continue
-        prepared_data.append({
-            'time': line['time'],
-            'value': line['frequency'],
-            'feature': 'frequency'
-        })
 
-    time_col = [i['time'] for i in prepared_data]
-    val_col = [i['value'] for i in prepared_data]
+    # Getting boundings of graph
+    min_x = min(frequency_df.time) if len(frequency_df.time) > 0 else 0
+    max_x = max(frequency_df.time) if len(frequency_df.time) > 0 else 10
+    min_y = min(frequency_df.value) if len(frequency_df.value) > 0 else -50
+    max_y = max(frequency_df.value) if len(frequency_df.value) > 0 else 50
 
-    min_x = min(time_col) if len(time_col) > 0 else 0
-    max_x = max(time_col) if len(time_col) > 0 else 10
-    min_y = min(val_col) if len(val_col) > 0 else -50
-    max_y = max(val_col) if len(val_col) > 0 else 50
+    print('Len freq df:', len(frequency_df))
 
-    data = px.line(prepared_data, x="time", y="value", color="feature",
+    data = px.line(frequency_df, x="time", y="value", color="feature",
                    title='FALL-E Telementry Data - Frequency', range_x=[min_x, max_x], range_y=[min_y, max_y])
-
     return data
 
 
@@ -111,40 +108,20 @@ def update_graph_telemetry_frequency(n):
     [Input('graph-update', 'n_intervals')]
 )
 def update_graph_telemetry_stabilisation(n):
-    if len(telemetry_list) == 0:
+    if len(telemetry_df) == 0:
         return "Data Missing"
-    prepared_data = []
-    for line in telemetry_list:
-        prepared_data.append({
-            'time': line['time'],
-            'value': line['comp_angle'],
-            'feature': 'comp_angle'
-        })
-        prepared_data.append({
-            'time': line['time'],
-            'value': line['control'],
-            'feature': 'control'
-        })
-        prepared_data.append({
-            'time': line['time'],
-            'value': line['gyro_angle'],
-            'feature': 'gyro'
-        })
-        prepared_data.append({
-            'time': line['time'],
-            'value': line['accel_angle'],
-            'feature': 'accel_angle'
-        })
 
-    time_col = [i['time'] for i in prepared_data]
-    val_col = [i['value'] for i in prepared_data]
+    feature_df = telemetry_df.loc[telemetry_df['feature'] != 'frequency']
 
-    min_x = min(time_col) if len(time_col) > 0 else 0
-    max_x = max(time_col) if len(time_col) > 0 else 10
-    min_y = min(val_col) if len(val_col) > 0 else -50
-    max_y = max(val_col) if len(val_col) > 0 else 50
+    # Getting boundings of graph
+    min_x = min(feature_df.time) if len(feature_df.time) > 0 else 0
+    max_x = max(feature_df.time) if len(feature_df.time) > 0 else 10
+    min_y = min(feature_df.value) if len(feature_df.value) > 0 else -50
+    max_y = max(feature_df.value) if len(feature_df.value) > 0 else 50
 
-    data = px.line(prepared_data, x="time", y="value", color="feature",
+    print('LEN feature_DF:', len(feature_df))
+
+    data = px.line(feature_df, x="time", y="value", color="feature",
                    title='FALL-E Telementry Data - Stabilisation', range_x=[min_x, max_x], range_y=[min_y, max_y])
 
     return data
