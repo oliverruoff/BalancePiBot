@@ -36,7 +36,9 @@ class mpu6050:
     def __init__(self):
 
         self.MPU_Init()
-        self.gyro_drift = self.get_gyro_drift()
+        self.gyro_x_drift = self.get_gyro_x_drift()
+        self.gyro_y_drift = self.get_gyro_y_drift()
+        self.gyro_z_drift = self.get_gyro_z_drift()
         self.accel_avg = self.get_accel_error()
         print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
         self.gyro_angle = 0
@@ -132,8 +134,14 @@ class mpu6050:
     def get_accel_error(self, samples=100):
         return sum([math.degrees(self.angle(self.get_full_accel_data(), (1, 0, 0))) for i in range(samples)])/samples
 
-    def get_gyro_drift(self, samples=100):
+    def get_gyro_x_drift(self, samples=100):
+        return sum([self.read_raw_data(GYRO_XOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(samples)])/samples
+
+    def get_gyro_y_drift(self, samples=100):
         return sum([self.read_raw_data(GYRO_YOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(samples)])/samples
+
+    def get_gyro_z_drift(self, samples=100):
+        return sum([self.read_raw_data(GYRO_ZOUT_H)/MPU_SENSOR_GYRO_CONSTANT for i in range(samples)])/samples
 
     def get_angle(self):
         '''

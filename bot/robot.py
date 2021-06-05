@@ -10,11 +10,11 @@ from transmission import transmittor
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # URL to send telemtry data to
-TELEMTRY_TRANSMISSION = True
+TELEMTRY_TRANSMISSION = False
 TELEMETRY_BATCH_TIME_SECONDS = 1
 SERVER_URL = 'http://192.168.178.32:5000'
 
-DEBUG = True
+DEBUG = False
 
 
 # If robot center weight is not centered
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             frequency = int(data[3])
 
             print('GYRO X:', mpu.get_new_gyro_angle(
-                'x', 0, gyro_drift=mpu.gyro_drift, raw=True))
+                'x', 0, gyro_drift=mpu.gyro_x_drift, raw=True))
 
             # Use pid to get motor control
             control = pid(comp_angle)
