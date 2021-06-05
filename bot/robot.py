@@ -58,8 +58,11 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
-    transmit = transmittor.transmittor(
-        SERVER_URL, TELEMETRY_BATCH_TIME_SECONDS)
+    if TELEMTRY_TRANSMISSION:
+        transmit = transmittor.transmittor(
+            SERVER_URL, TELEMETRY_BATCH_TIME_SECONDS)
+        transmit.start_config_synchronization()
+        print('Synching with telemetry server started.')
 
     last_telemetry_server_sync = 0
 
@@ -93,8 +96,7 @@ if __name__ == '__main__':
                 # Every second sync with telemetry server
                 if (now - last_telemetry_server_sync) >= 1:
                     print('Syncing with telemetry server')
-                    new_settings = transmit.sync_with_telemetry_server(
-                        'sync')
+                    new_settings = transmit.get_configs()
                     last_telemetry_server_sync = now
                     if new_settings != settings:
                         print(
