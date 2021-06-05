@@ -40,7 +40,8 @@ class mpu6050:
         self.gyro_y_drift = self.get_gyro_y_drift()
         self.gyro_z_drift = self.get_gyro_z_drift()
         self.accel_avg = self.get_accel_error()
-        print('Gyro_Drift:', self.gyro_drift, '| Accel_Avg:', self.accel_avg)
+        print('Gyro_Y_Drift:', self.gyro_y_drift,
+              '| Accel_Avg:', self.accel_avg)
         self.gyro_angle = 0
         self.complementary_filter_angle = 0
         self.accel_angle = 0
@@ -78,7 +79,7 @@ class mpu6050:
             value = value - 65536
         return value
 
-    def get_new_gyro_angle(self, axis, time_diff_s, old_angle=0, gyro_drift=0.4827480916030538, raw=False):
+    def get_new_gyro_angle(self, axis, time_diff_s, gyro_drift, old_angle=0, raw=False):
         DEGREE_SCALE_CONSTANT = 8
         if axis == 'x':
             raw = self.read_raw_data(GYRO_XOUT_H)
@@ -86,6 +87,14 @@ class mpu6050:
             raw = self.read_raw_data(GYRO_YOUT_H)
         elif axis == 'z':
             raw = self.read_raw_data(GYRO_ZOUT_H)
+
+        if gyro_drift == None:
+            if axis == 'x':
+                gyro_drift = self.get_gyro_x_drift()
+            elif axis == 'y':
+                gyro_drift = self.get_gyro_y_drift()
+            elif axis == 'z':
+                gyro_drift = self.get_gyro_z_drift()
 
         raw = raw / MPU_SENSOR_GYRO_CONSTANT
         raw = (raw-gyro_drift) * DEGREE_SCALE_CONSTANT
@@ -157,7 +166,7 @@ class mpu6050:
         self.last_time = curr_time
 
         gyro_raw = self.get_new_gyro_angle(
-            'y', time_diff, 0, self.gyro_drift, True)
+            'y', time_diff, self.gyro_y_drift, 0,  True)
 
         accel_raw = self.get_full_accel_data()
 
