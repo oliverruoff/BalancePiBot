@@ -86,11 +86,11 @@ if __name__ == '__main__':
             print('GYRO_Z_RAW:', mpu.read_raw_data(0x47))
 
             if gyro_z > 0:
-                motor_driver.left_motor_factor = 1 - gyro_z
-                motor_driver.right_motor_factor = 1 + gyro_z
+                motor_driver.left_motor_factor = 1 - (gyro_z/10)
+                motor_driver.right_motor_factor = 1 + (gyro_z/10)
             else:
-                motor_driver.left_motor_factor = 1 + gyro_z
-                motor_driver.right_motor_factor = 1 - gyro_z
+                motor_driver.left_motor_factor = 1 + (gyro_z/10)
+                motor_driver.right_motor_factor = 1 - (gyro_z/10)
 
             # Use pid to get motor control
             control = pid(comp_angle)
