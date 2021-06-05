@@ -81,25 +81,6 @@ if __name__ == '__main__':
             # Use pid to get motor control
             control = pid(comp_angle)
 
-            if control != 0:
-                # for making sure that robot does not turn while balancing
-                gyro_z = mpu.get_new_gyro_angle(
-                    'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
-
-                print('GYRO_Z:', gyro_z)
-                print('GYRO_Z_RAW:', mpu.read_raw_data(0x47))
-
-                if gyro_z > 0:
-                    motor_driver.left_motor_factor = motor_driver.left_motor_factor * \
-                        (1 - gyro_z/100)
-                    motor_driver.right_motor_factor = motor_driver.right_motor_factor * \
-                        (1 + gyro_z/100)
-                else:
-                    motor_driver.left_motor_factor = motor_driver.left_motor_factor * \
-                        (1 + gyro_z/100)
-                    motor_driver.right_motor_factor = motor_driver.right_motor_factor * \
-                        (1 - gyro_z/100)
-
             # Increase control in case it's lower than MIN_DUTY_CYCLE
             abs_control = abs(control)
             abs_min_control = MIN_DUTY_CYCLE if abs_control < MIN_DUTY_CYCLE and abs_control > 0 else abs_control
@@ -146,11 +127,8 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
-            left_motor_control = abs_min_control*motor_driver.left_motor_factor
-            right_motor_control = abs_min_control*motor_driver.right_motor_factor
-
-            print('L_Control:', left_motor_control,
-                  '| R_Control:', right_motor_control)
+            left_motor_control = abs_min_control  # *motor_driver.left_motor_factor
+            right_motor_control = abs_min_control  # *motor_driver.right_motor_factor
 
             # Change motor speed
             motor_driver.change_left_duty_cycle(
