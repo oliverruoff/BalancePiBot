@@ -90,11 +90,15 @@ if __name__ == '__main__':
                 print('GYRO_Z_RAW:', mpu.read_raw_data(0x47))
 
                 if gyro_z > 0:
-                    motor_driver.left_motor_factor = 1 - (gyro_z/100)
-                    motor_driver.right_motor_factor = 1 + (gyro_z/100)
+                    motor_driver.left_motor_factor = motor_driver.left_motor_factor * \
+                        (1 - gyro_z/100)
+                    motor_driver.right_motor_factor = motor_driver.right_motor_factor * \
+                        (1 + gyro_z/100)
                 else:
-                    motor_driver.left_motor_factor = 1 + (gyro_z/100)
-                    motor_driver.right_motor_factor = 1 - (gyro_z/100)
+                    motor_driver.left_motor_factor = motor_driver.left_motor_factor * \
+                        (1 + gyro_z/100)
+                    motor_driver.right_motor_factor = motor_driver.right_motor_factor * \
+                        (1 - gyro_z/100)
 
             # Increase control in case it's lower than MIN_DUTY_CYCLE
             abs_control = abs(control)
