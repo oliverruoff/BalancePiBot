@@ -79,8 +79,11 @@ if __name__ == '__main__':
             frequency = int(data[3])
 
             # for making sure that robot does not turn while balancing
-            gyro_z = mpu.get_new_gyro_angle(
-                'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True)
+            gyro_z = int(mpu.get_new_gyro_angle(
+                'z', 0, gyro_drift=mpu.gyro_z_drift, raw=True))
+
+            print('GYRO_Z:', gyro_z)
+
             if gyro_z > 0:
                 motor_driver.left_motor_factor -= 0.1
                 motor_driver.right_motor_factor += 0.1
