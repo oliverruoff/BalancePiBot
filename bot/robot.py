@@ -14,7 +14,7 @@ TELEMTRY_TRANSMISSION = False
 TELEMETRY_BATCH_TIME_SECONDS = 1
 SERVER_URL = 'http://192.168.178.32:5000'
 
-DEBUG = False
+DEBUG = True
 
 
 # If robot center weight is not centered
