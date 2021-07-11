@@ -21,15 +21,15 @@ DEBUG = True
 setpoint = -1
 # Adds this value to right motor's duty cycle,
 # subtracts it from the left motor's duty cycle.
-RIGHT_MOTOR_OFFSET = -3
+RIGHT_MOTOR_OFFSET = -2
 
 # If motors need some minimal duty cycle to spin
 MIN_DUTY_CYCLE = 0
 
 # For PID controller
-Kp = 50  # 50
+Kp = 45  # 50
 Ki = 0  # 0
-Kd = 0.1  # 0.3
+Kd = 0.05  # 0.3
 
 STABILITY_SWITCH_PIN = 17
 
@@ -118,6 +118,10 @@ if __name__ == '__main__':
                 accel_avg = mpu.get_accel_error()
                 mpu.accel_avg = accel_avg
                 print('Recalibrated accel error:', accel_avg)
+                continue
+
+            # if robot fell over, do nothing
+            if abs(comp_angle) > 30:
                 continue
 
             # setting direction
