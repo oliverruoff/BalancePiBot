@@ -18,10 +18,10 @@ DEBUG = True
 
 
 # If robot center weight is not centered
-setpoint = 0
+setpoint = -1
 # Adds this value to right motor's duty cycle,
 # subtracts it from the left motor's duty cycle.
-RIGHT_MOTOR_OFFSET = -5
+RIGHT_MOTOR_OFFSET = -3
 
 # If motors need some minimal duty cycle to spin
 MIN_DUTY_CYCLE = 0
