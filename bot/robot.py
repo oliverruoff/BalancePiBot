@@ -122,6 +122,8 @@ if __name__ == '__main__':
 
             # if robot fell over, do nothing
             if abs(comp_angle) > 30:
+                motor_driver.stop_both()
+                time.sleep(0.01)
                 continue
 
             # setting direction
