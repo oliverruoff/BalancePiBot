@@ -128,23 +128,13 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
-            left_motor_control = abs_min_control  # *motor_driver.left_motor_factor
-            right_motor_control = abs_min_control  # *motor_driver.right_motor_factor
+            left_motor_control = abs_min_control - RIGHT_MOTOR_OFFSET if abs_min_control - \
+                RIGHT_MOTOR_OFFSET > 0 and abs_min_control - RIGHT_MOTOR_OFFSET < 100 else \
+                0 if abs_min_control - RIGHT_MOTOR_OFFSET < 100 else 100
 
-            if right_motor_control + RIGHT_MOTOR_OFFSET > 100:
-                right_rest = right_motor_control + RIGHT_MOTOR_OFFSET % 100
-                right_motor_control = 100
-                left_motor_control = left_motor_control - RIGHT_MOTOR_OFFSET - \
-                    right_rest if left_motor_control - RIGHT_MOTOR_OFFSET - right_rest > 0 else 0
-            elif right_motor_control + RIGHT_MOTOR_OFFSET < 0:
-                right_rest = 100 - (right_motor_control +
-                                    RIGHT_MOTOR_OFFSET % 100)
-                right_motor_control = 0
-                left_motor_control = left_motor_control + RIGHT_MOTOR_OFFSET + \
-                    right_rest if left_motor_control + RIGHT_MOTOR_OFFSET + right_rest < 100 else 100
-            else:
-                right_motor_control = right_motor_control + RIGHT_MOTOR_OFFSET
-                left_motor_control = left_motor_control - RIGHT_MOTOR_OFFSET
+            right_motor_control = abs_min_control + RIGHT_MOTOR_OFFSET if abs_min_control + \
+                RIGHT_MOTOR_OFFSET < 100 and abs_min_control + RIGHT_MOTOR_OFFSET > 0 else \
+                100 if abs_min_control + RIGHT_MOTOR_OFFSET > 0 else 0
 
             if DEBUG:
                 print('Left motor control:', left_motor_control)
