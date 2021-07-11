@@ -19,8 +19,11 @@ DEBUG = True
 
 # If robot center weight is not centered
 setpoint = 0
+# Adds this value to right motor's duty cycle,
+# subtracts it from the left motor's duty cycle.
+RIGHT_MOTOR_OFFSET = 0
 
-# If motors need some specify duty cycle to spin
+# If motors need some minimal duty cycle to spin
 MIN_DUTY_CYCLE = 0
 
 # For PID controller
@@ -127,6 +130,25 @@ if __name__ == '__main__':
 
             left_motor_control = abs_min_control  # *motor_driver.left_motor_factor
             right_motor_control = abs_min_control  # *motor_driver.right_motor_factor
+
+            if right_motor_control + RIGHT_MOTOR_OFFSET > 100:
+                right_rest = right_motor_control + RIGHT_MOTOR_OFFSET % 100
+                right_motor_control = 100
+                left_motor_control = left_motor_control - RIGHT_MOTOR_OFFSET - \
+                    right_rest if left_motor_control - RIGHT_MOTOR_OFFSET - right_rest > 0 else 0
+            elif right_motor_control + RIGHT_MOTOR_OFFSET < 0:
+                right_rest = 100 - (right_motor_control +
+                                    RIGHT_MOTOR_OFFSET % 100)
+                right_motor_control = 0
+                left_motor_control = left_motor_control + RIGHT_MOTOR_OFFSET + \
+                    right_rest if left_motor_control + RIGHT_MOTOR_OFFSET + right_rest < 100 else 100
+            else:
+                right_motor_control = right_motor_control + RIGHT_MOTOR_OFFSET
+                left_motor_control = left_motor_control - RIGHT_MOTOR_OFFSET
+
+            if DEBUG:
+                print('Left motor control:', left_motor_control)
+                print('Right motor control:', right_motor_control)
 
             # Change motor speed
             motor_driver.change_left_duty_cycle(
