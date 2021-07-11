@@ -21,7 +21,7 @@ DEBUG = True
 setpoint = 0
 # Adds this value to right motor's duty cycle,
 # subtracts it from the left motor's duty cycle.
-RIGHT_MOTOR_OFFSET = 0
+RIGHT_MOTOR_OFFSET = -5
 
 # If motors need some minimal duty cycle to spin
 MIN_DUTY_CYCLE = 0
