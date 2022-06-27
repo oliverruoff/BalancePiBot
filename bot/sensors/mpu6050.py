@@ -70,7 +70,6 @@ class mpu6050:
             low = bus.read_byte_data(Device_Address, addr+1)
         except Exception as ex:
             print(ex)
-            return self.read_raw_data(addr)
 
         # concatenate higher and lower value
         value = ((high << 8) | low)
