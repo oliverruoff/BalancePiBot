@@ -28,7 +28,7 @@ bus = smbus.SMBus(1)    # or bus = smbus.SMBus(0) for older version boards
 Device_Address = 0x68   # MPU6050 device address
 
 # weight for the gyro angle for complementary filter 1-GYRO_WEIGHT is accel weight
-GYRO_WEIGHT = 0.98
+GYRO_WEIGHT = 0.99
 
 
 class mpu6050:
