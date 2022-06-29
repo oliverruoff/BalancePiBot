@@ -31,13 +31,10 @@ Kp = 45  # 50
 Ki = 0  # 0
 Kd = 0.05  # 0.3
 
-STABILITY_SWITCH_PIN = 17
-
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 GPIO_MODE = GPIO.BCM
 GPIO.setmode(GPIO_MODE)
-GPIO.setup(STABILITY_SWITCH_PIN, GPIO.IN)
 
 
 if __name__ == '__main__':
@@ -109,16 +106,6 @@ if __name__ == '__main__':
                         setpoint = settings['Setpoint']
                         pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=setpoint,
                                   sample_time=0.005, output_limits=(-100, 100))
-
-            # Checking if switch is ON or OFF to de/activate motors
-            stability_switch = GPIO.input(STABILITY_SWITCH_PIN)
-            if not stability_switch:
-                motor_driver.stop_both()
-                time.sleep(0.01)
-                accel_avg = mpu.get_accel_error()
-                mpu.accel_avg = accel_avg
-                print('Recalibrated accel error:', accel_avg)
-                continue
 
             # if robot fell over, do nothing
             if abs(comp_angle) > 30:
