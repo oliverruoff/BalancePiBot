@@ -27,9 +27,9 @@ RIGHT_MOTOR_OFFSET = 2
 MIN_DUTY_CYCLE = 0
 
 # For PID controller
-Kp = 20  # 45
-Ki = 0  # 0
-Kd = 0  # 0.05
+Kp = 25  # 45
+Ki = 100  # 0
+Kd = 0.2  # 0.05
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
