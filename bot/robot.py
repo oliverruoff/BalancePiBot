@@ -10,11 +10,11 @@ from transmission import transmittor
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
 # URL to send telemtry data to
-TELEMTRY_TRANSMISSION = True
+TELEMTRY_TRANSMISSION = False
 TELEMETRY_BATCH_TIME_SECONDS = 1
 SERVER_URL = 'http://192.168.178.25:5000'
 
-DEBUG = True
+DEBUG = False
 
 
 # If robot center weight is not centered

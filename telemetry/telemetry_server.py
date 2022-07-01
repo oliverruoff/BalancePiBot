@@ -1,7 +1,3 @@
-from time import time
-
-import pandas as pd
-from pandas.core.dtypes.dtypes import PeriodDtype
 import dash
 from dash.dependencies import Output, Input, State
 import dash_core_components as dcc
