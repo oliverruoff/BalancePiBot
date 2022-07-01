@@ -18,3 +18,16 @@ def set_angle(angle):
     sleep(1)
     GPIO.output(DATA_PIN, False)
     pwm.ChangeDutyCycle(duty)
+
+
+print('0')
+set_angle(0)
+sleep(1)
+print('90')
+set_angle(90)
+sleep(1)
+print('180')
+set_angle(180)
+sleep(1)
+print('360')
+set_angle(360)
