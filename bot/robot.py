@@ -11,7 +11,7 @@ from actuators import l298n
 
 DEBUG = True
 if DEBUG:
-    DEBUG_FREQUENCY_ARRAY_SIZE = 100
+    DEBUG_FREQUENCY_ARRAY_SIZE = 1000
     debug_frequency = [] # Last DEBUG_FREQUENCY_ARRAY_SIZE frequencies stored for average calc.
 
 
