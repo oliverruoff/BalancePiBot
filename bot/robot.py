@@ -11,7 +11,7 @@ from actuators import l298n
 
 DEBUG = True
 if DEBUG:
-    DEBUG_FREQUENCY_ARRAY_SIZE = 2000
+    DEBUG_FREQUENCY_ARRAY_SIZE = 2000 # Number of entries for frequency average calculations etc.
     debug_frequency = [] # Last DEBUG_FREQUENCY_ARRAY_SIZE frequencies stored for average calc.
 
 
@@ -72,6 +72,7 @@ if __name__ == '__main__':
             abs_control = abs(control)
             abs_min_control = MIN_DUTY_CYCLE if abs_control < MIN_DUTY_CYCLE else abs_control
 
+            # Code for debugging. (Sensor and PID output etc.)
             if DEBUG:
                 debug_frequency.append(frequency)
                 if len(debug_frequency) > DEBUG_FREQUENCY_ARRAY_SIZE:
@@ -82,7 +83,7 @@ if __name__ == '__main__':
                 print('compl:', comp_angle, '\tgyro:', gyro_angle, '\taccel:', accel_angle, '\tcontrol:', abs_min_control,
                  '\tfreq:', frequency, '\tavg_freq:', freq_avg, '\tmin_freq:', freq_min, '\tmax_freq:', freq_max)
 
-            # if robot fell over, do nothing
+            # if robot falls over, do nothing
             if abs(comp_angle) > 30:
                 motor_driver.stop_both()
                 continue
@@ -103,4 +104,5 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
+        GPIO.cleanup()
         print('Stopped!')
