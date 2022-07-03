@@ -70,6 +70,8 @@ class mpu6050:
             low = bus.read_byte_data(Device_Address, addr+1)
         except Exception as ex:
             print(ex)
+            print('Wrongly returning 0 from reading mpu6050 sensor data. Hoping robot will compensate wrong measurement in next iteration.')
+            return 0
 
         # concatenate higher and lower value
         value = ((high << 8) | low)
