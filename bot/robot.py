@@ -79,8 +79,8 @@ if __name__ == '__main__':
                 freq_avg = sum(debug_frequency) / len(debug_frequency)
                 freq_min = min(debug_frequency)
                 freq_max = max(debug_frequency)
-                print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'control:', abs_min_control,
-                 'freq:', frequency, 'avg_freq:', freq_avg, 'min_freq:', freq_min, 'max_freq:', freq_max)
+                print('compl:\t', comp_angle, 'gyro:\t', gyro_angle, 'accel:\t', accel_angle, 'control:\t', abs_min_control,
+                 'freq:\t', frequency, 'avg_freq:\t', freq_avg, 'min_freq:\t', freq_min, 'max_freq:\t', freq_max)
 
             # if robot fell over, do nothing
             if abs(comp_angle) > 30:
