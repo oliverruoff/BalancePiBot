@@ -9,7 +9,7 @@ from actuators import l298n
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-DEBUG = True
+DEBUG = False
 if DEBUG:
     DEBUG_FREQUENCY_ARRAY_SIZE = 2000 # Number of entries for frequency average calculations etc.
     debug_frequency = [] # Last DEBUG_FREQUENCY_ARRAY_SIZE frequencies stored for average calc.
