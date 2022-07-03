@@ -1,3 +1,4 @@
+from distutils.log import debug
 import time
 
 import RPi.GPIO as GPIO
@@ -5,23 +6,17 @@ from simple_pid import PID
 
 from sensors import mpu6050
 from actuators import l298n
-from transmission import transmittor
 
 # IMPORTANT VARIABLES TO CONFIGURE -------------------
 
-# URL to send telemtry data to
-TELEMTRY_TRANSMISSION = False
-TELEMETRY_BATCH_TIME_SECONDS = 1
-SERVER_URL = 'http://192.168.178.25:5000'
-
 DEBUG = True
+if DEBUG:
+    DEBUG_FREQUENCY_ARRAY_SIZE = 100
+    debug_frequency = [] # Last DEBUG_FREQUENCY_ARRAY_SIZE frequencies stored for average calc.
 
 
 # If robot center weight is not centered
 setpoint = 1
-# Adds this value to right motor's duty cycle,
-# subtracts it from the left motor's duty cycle.
-RIGHT_MOTOR_OFFSET = 2
 
 # If motors need some minimal duty cycle to spin
 MIN_DUTY_CYCLE = 0
@@ -59,14 +54,6 @@ if __name__ == '__main__':
 
     mpu = mpu6050.mpu6050()
 
-    if TELEMTRY_TRANSMISSION:
-        transmit = transmittor.transmittor(
-            SERVER_URL, TELEMETRY_BATCH_TIME_SECONDS)
-        transmit.start_config_synchronization()
-        print('Synching with telemetry server started.')
-
-    last_telemetry_server_sync = 0
-
     try:
         while(True):
             now = time.time()
@@ -83,34 +70,21 @@ if __name__ == '__main__':
 
             # Increase control in case it's lower than MIN_DUTY_CYCLE
             abs_control = abs(control)
-            abs_min_control = MIN_DUTY_CYCLE if abs_control < MIN_DUTY_CYCLE and abs_control > 0 else abs_control
+            abs_min_control = MIN_DUTY_CYCLE if abs_control < MIN_DUTY_CYCLE else abs_control
 
             if DEBUG:
-                print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'freq:',
-                      frequency, 'control:', abs_min_control)
-
-            # Telemetry server interaction
-            if TELEMTRY_TRANSMISSION:
-                # Sending telemetry data to server
-                transmit.collect_telemetry(
-                    comp_angle, gyro_angle, accel_angle, control, frequency)
-                # Every second sync with telemetry server
-                if (now - last_telemetry_server_sync) >= 1:
-                    print('Syncing with telemetry server')
-                    new_settings = transmit.get_configs()
-                    last_telemetry_server_sync = now
-                    if new_settings != settings:
-                        print(
-                            'Received new settings from telemetry server:', new_settings)
-                        settings = new_settings
-                        setpoint = settings['Setpoint']
-                        pid = PID(settings['Kp'], settings['Ki'], settings['Kd'], setpoint=setpoint,
-                                  sample_time=0.005, output_limits=(-100, 100))
+                debug_frequency.append(frequency)
+                if len(debug_frequency) > 100:
+                    debug_frequency.pop(0)
+                freq_avg = sum(debug_frequency) / len(debug_frequency)
+                freq_min = min(debug_frequency)
+                freq_max = max(debug_frequency)
+                print('compl:', comp_angle, 'gyro:', gyro_angle, 'accel:', accel_angle, 'control:', abs_min_control,
+                 'freq:', frequency, 'avg_freq:', freq_avg, 'min_freq:', freq_min, 'max_freq:', freq_max)
 
             # if robot fell over, do nothing
             if abs(comp_angle) > 30:
                 motor_driver.stop_both()
-                time.sleep(0.01)
                 continue
 
             # setting direction
@@ -121,23 +95,11 @@ if __name__ == '__main__':
                 motor_driver.change_left_direction(False)
                 motor_driver.change_right_direction(False)
 
-            left_motor_control = abs_min_control - RIGHT_MOTOR_OFFSET if abs_min_control - \
-                RIGHT_MOTOR_OFFSET > 0 and abs_min_control - RIGHT_MOTOR_OFFSET < 100 else \
-                0 if abs_min_control - RIGHT_MOTOR_OFFSET < 100 else 100
-
-            right_motor_control = abs_min_control + RIGHT_MOTOR_OFFSET if abs_min_control + \
-                RIGHT_MOTOR_OFFSET < 100 and abs_min_control + RIGHT_MOTOR_OFFSET > 0 else \
-                100 if abs_min_control + RIGHT_MOTOR_OFFSET > 0 else 0
-
-            if DEBUG:
-                print('Left motor control:', left_motor_control)
-                print('Right motor control:', right_motor_control)
-
             # Change motor speed
             motor_driver.change_left_duty_cycle(
-                left_motor_control)
+                abs_min_control)
             motor_driver.change_right_duty_cycle(
-                right_motor_control)
+                abs_min_control)
 
     except KeyboardInterrupt:
         motor_driver.stop_both()
