@@ -1,7 +1,10 @@
 # BalancePiBot - aka FALL-E
 A balancing robot build around a Raspberry Pi 3.
 
-![BalanceBot](docs/bb.png)
+![BalanceBot Animation](docs/bb.gif)
+![BalanceBot](docs/bb2.png)
+![BalanceBot](docs/bb3.png)
+
 
 ## Telemetry Viewer
 
